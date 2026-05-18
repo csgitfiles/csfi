@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MR16 Lamp & Fixture Analysis — Coastal Source</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    background: #FAFAF8;
+    color: #1F1F1F;
+    line-height: 1.5;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+  }
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    color: #1F1F1F;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #6B6B6B;
+    margin: 0 0 28px;
+  }
+  .card {
+    background: #FFFFFF;
+    border: 0.5px solid #E0E0DA;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .tabs { display: flex; gap: 12px; margin: 0 0 1rem; flex-wrap: wrap; align-items: center; }
+  .tab-btn {
+    padding: 6px 14px;
+    background: transparent;
+    border: 0.5px solid #D0D0CA;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    color: #1F1F1F;
+  }
+  .tab-btn.active { background: #FFFFFF; border-color: #1F1F1F; font-weight: 500; }
+  .tab-caption { margin-left: auto; font-size: 12px; color: #6B6B6B; }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.25rem; }
+  @media (max-width: 600px) {
+    .stat-grid { grid-template-columns: 1fr; }
+  }
+  .stat-card { padding: 12px 14px; border-radius: 8px; }
+  .stat-card.cat-a { background: #FFF8E7; border: 0.5px solid #E8C97A; color: #2C1A02; }
+  .stat-card.cat-b { background: #E9F3E0; border: 0.5px solid #B5D38F; color: #0F2003; }
+  .stat-header { font-size: 12px; font-weight: 500; margin-bottom: 8px; letter-spacing: 0.3px; }
+  .cat-a .stat-header { color: #5C3604; }
+  .cat-b .stat-header { color: #1E3A06; }
+  .stat-total { font-size: 22px; font-weight: 500; margin-bottom: 6px; }
+  .cat-a .stat-total { color: #2C1A02; }
+  .cat-b .stat-total { color: #0F2003; }
+  .stat-rows { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; }
+  .cat-a .stat-rows { color: #5C3604; }
+  .cat-b .stat-rows { color: #1E3A06; }
+  .stat-rows b { font-weight: 500; }
+  .cat-a .stat-rows b { color: #2C1A02; }
+  .cat-b .stat-rows b { color: #0F2003; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 8px; font-size: 12px; color: #6B6B6B; }
+  .legend .sw { width: 12px; height: 12px; border-radius: 2px; display: inline-block; margin-right: 6px; vertical-align: -2px; border: 0.5px solid rgba(0,0,0,0.08); }
+  .chart-wrap { position: relative; width: 100%; height: 360px; }
+  .footnote {
+    font-size: 12px;
+    color: #6B6B6B;
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #F5F4EE;
+    border-radius: 8px;
+    line-height: 1.6;
+  }
+  .footnote b { color: #1F1F1F; font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>MR16 Lamp &amp; Fixture Analysis</h1>
+<p class="subtitle">Coastal Source — 3 years of order data, paid lines only</p>
+
+<div class="card">
+  <div class="tabs">
+    <button id="tab-w" class="tab-btn active">Wattage</button>
+    <button id="tab-k" class="tab-btn">Color temp</button>
+    <span class="tab-caption">Quantity-weighted, kit components excluded</span>
+  </div>
+
+  <div id="stats" class="stat-grid"></div>
+
+  <div id="legend-w" class="legend">
+    <span><span class="sw" style="background: #CFE0F5;"></span>1.5W</span>
+    <span><span class="sw" style="background: #6BA1DC;"></span>3W</span>
+    <span><span class="sw" style="background: #2A6EBA;"></span>6W</span>
+    <span><span class="sw" style="background: #103A6E;"></span>9W</span>
+  </div>
+  <div id="legend-k" class="legend" style="display: none;">
+    <span><span class="sw" style="background: #FF9A3C;"></span>2700K — warm orange</span>
+    <span><span class="sw" style="background: #FFE9B5;"></span>3000K — yellow white</span>
+    <span><span class="sw" style="background: #C8D9F2;"></span>4000K — cool blue white</span>
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="chart" role="img" aria-label="Stacked horizontal bar chart showing MR16 lamp distribution by fixture type">MR16 lamp distribution by fixture type.</canvas>
+  </div>
+
+  <div class="footnote">
+    <b>How to read this:</b> Each bar shows the share of MR16 lamp wattage (or color temperature) attributed to that fixture type, based on which lamps appeared on the same purchase orders. Category A fixtures (Path Lights, Tiki Torches) can only accept 1.5W or 3W lamps. Category B fixtures (Bullet, Tree, Well, Hanging) accept all four wattages.
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+  const fixtures = [
+    "MR16 Bullet Lights",
+    "MR16 Path Lights",
+    "MR16 Tree Lights",
+    "MR16 Well Lights",
+    "Tiki Torches",
+    "MR16 Hanging Lights"
+  ];
+
+  const wattageData = {
+    "1.5W": [7.6, 22.9, 10.8, 11.1, 18.4, 8.0],
+    "3W":   [36.3, 77.1, 35.6, 30.8, 81.6, 61.2],
+    "6W":   [36.0, 0.0,  39.9, 36.5, 0.0,  25.7],
+    "9W":   [20.1, 0.0,  13.7, 21.5, 0.0,  5.1]
+  };
+
+  const colorTempData = {
+    "2.7K": [47.4, 63.9, 39.1, 47.9, 50.8, 58.4],
+    "3K":   [50.8, 35.9, 54.7, 50.6, 46.3, 36.1],
+    "4K":   [1.8,  0.1,  6.2,  1.4,  2.9,  5.5]
+  };
+
+  const wattageColors = ["#CFE0F5", "#6BA1DC", "#2A6EBA", "#103A6E"];
+  const ctColors = ["#FF9A3C", "#FFE9B5", "#C8D9F2"];
+
+  const stats = {
+    w: {
+      a: { title: 'Category A — Path Lights, Tiki Torches', total: 11671, parts: [['1.5W', 22.4], ['3W', 77.6]] },
+      b: { title: 'Category B — Bullet, Tree, Well, Hanging', total: 40675, parts: [['1.5W', 8.4], ['3W', 35.8], ['6W', 36.6], ['9W', 19.2]] }
+    },
+    k: {
+      a: { title: 'Category A — Path Lights, Tiki Torches', total: 11671, parts: [['2700K', 62.6], ['3000K', 37.0], ['4000K', 0.4]] },
+      b: { title: 'Category B — Bullet, Tree, Well, Hanging', total: 40675, parts: [['2700K', 46.3], ['3000K', 51.3], ['4000K', 2.5]] }
+    }
+  };
+
+  function renderStats(mode) {
+    const a = stats[mode].a;
+    const b = stats[mode].b;
+    const fmtParts = (p) => p.map(([label, pct]) => `<span><b>${pct.toFixed(1)}%</b> ${label}</span>`).join('');
+    document.getElementById('stats').innerHTML = `
+      <div class="stat-card cat-a">
+        <div class="stat-header">${a.title.toUpperCase()}</div>
+        <div class="stat-total">${a.total.toLocaleString()} lamps</div>
+        <div class="stat-rows">${fmtParts(a.parts)}</div>
+      </div>
+      <div class="stat-card cat-b">
+        <div class="stat-header">${b.title.toUpperCase()}</div>
+        <div class="stat-total">${b.total.toLocaleString()} lamps</div>
+        <div class="stat-rows">${fmtParts(b.parts)}</div>
+      </div>
+    `;
+  }
+
+  let chart;
+  const ctx = document.getElementById('chart');
+
+  function buildConfig(mode) {
+    const data = mode === 'w' ? wattageData : colorTempData;
+    const colors = mode === 'w' ? wattageColors : ctColors;
+    const labels = mode === 'w' ? ["1.5W","3W","6W","9W"] : ["2700K","3000K","4000K"];
+    return {
+      type: 'bar',
+      data: {
+        labels: fixtures,
+        datasets: labels.map((lab, i) => ({
+          label: lab,
+          data: data[Object.keys(data)[i]],
+          backgroundColor: colors[i],
+          borderColor: mode === 'k' && i === 1 ? '#E8C97A' : 'transparent',
+          borderWidth: mode === 'k' && i === 1 ? 0.5 : 0
+        }))
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${Math.round(c.parsed.x * 10) / 10}%` } }
+        },
+        scales: {
+          x: { stacked: true, max: 100, ticks: { callback: v => v + '%', font: { size: 11 } } },
+          y: { stacked: true, ticks: { font: { size: 12 } } }
+        }
+      }
+    };
+  }
+
+  function setTab(mode) {
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, buildConfig(mode));
+    document.getElementById('tab-w').classList.toggle('active', mode === 'w');
+    document.getElementById('tab-k').classList.toggle('active', mode === 'k');
+    document.getElementById('legend-w').style.display = mode === 'w' ? 'flex' : 'none';
+    document.getElementById('legend-k').style.display = mode === 'k' ? 'flex' : 'none';
+    renderStats(mode);
+  }
+
+  renderStats('w');
+  chart = new Chart(ctx, buildConfig('w'));
+
+  document.getElementById('tab-w').onclick = () => setTab('w');
+  document.getElementById('tab-k').onclick = () => setTab('k');
+</script>
+</body>
+</html>
