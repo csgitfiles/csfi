@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2026 Road Tour — Stop Schedule</title>
+<title>2026 Road Tour Schedule</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -74,6 +74,9 @@
   .col-owner { font-size: 12px; color: var(--text-secondary); }
   .col-badge { display: flex; justify-content: flex-end; }
   .col-rep { font-size: 11px; color: var(--text-muted); text-align: right; }
+  .rep-link { font-size: 11px; color: var(--accent); text-decoration: none; text-align: right; }
+  .rep-link:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .stop-row.is-past .rep-link { color: #C0BDB8; }
 
   /* Past row dimming */
   .stop-row.is-past .col-date,
@@ -118,8 +121,7 @@
 
 <header>
   <div class="inner">
-    <div class="eyebrow">Coastal Source</div>
-    <h1>2026 Road Tour</h1>
+    <h1>2026 Road Tour Schedule</h1>
     <div class="meta">Event stop schedule — all rep territories</div>
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('list')">Sorted list</button>
@@ -155,6 +157,9 @@
       <div class="summary-item"><span class="summary-num" id="unconf-count">—</span><span class="summary-label">Not confirmed</span></div>
       <div class="summary-divider"></div>
       <div class="summary-item"><span class="summary-num" id="city-count">—</span><span class="summary-label">Cities</span></div>
+    </div>
+    <div id="unconfirmed-hint" style="font-size:12px; color:var(--text-muted); margin-bottom:16px; display:none;">
+      <span id="unconfirmed-hint-text"></span> — apply a filter above to include them.
     </div>
     <div id="stop-list"></div>
   </div>
@@ -253,6 +258,19 @@ const REP_SHORT = {
   'Performance Sales & Marketing':'Perf. Sales', 'Progressive':'Progressive', 'Unified Reps':'Unified Reps',
 };
 
+const REP_URL = {
+  'Access Reps': 'https://accessreps.com/',
+  'Atlantic Integrated': 'http://www.atlanticintegrated.com/',
+  'AWA Reps': 'https://awareps.com/',
+  'Bell & McCoy': 'https://www.bellandmccoy.com/companies/integrated-solutions',
+  'High Tech Network': 'https://htninc.net/',
+  'LK & Associates': 'https://lka-fl.com/',
+  'NuTech': 'https://nutechgroup.com/',
+  'Performance Sales & Marketing': 'https://www.performancesalesmktg.com/',
+  'Progressive': 'https://progressive-ci.com/',
+  'Unified Reps': 'https://www.unifiedrep.com/',
+};
+
 function buildChips() {
   document.getElementById('month-chips').innerHTML = allMonths.map(mk => {
     const p = mk.split('-'); const label = MONTHS_SHORT[+p[0]-1];
@@ -282,7 +300,9 @@ function resetFilters() {
 }
 
 function filteredStops() {
+  const hasActiveFilters = filters.months.size || filters.states.size || filters.reps.size;
   return stops.filter(s => {
+    if (!hasActiveFilters && !s.confirmed) return false;
     if (filters.months.size && !filters.months.has(monthKey(s.date))) return false;
     if (filters.states.size && !filters.states.has(s.state)) return false;
     if (filters.reps.size && !filters.reps.has(s.rep)) return false;
@@ -321,6 +341,11 @@ function renderList() {
       const timeCell = s.time
         ? `<span class="col-time">${s.time}</span>`
         : `<span class="col-time no-time">TBD</span>`;
+      const repUrl = REP_URL[s.rep];
+      const repLabel = REP_SHORT[s.rep] || s.rep;
+      const repCell = repUrl
+        ? `<a href="${repUrl}" target="_blank" rel="noopener" class="rep-link">${repLabel}</a>`
+        : `<span>${repLabel}</span>`;
       html += `<div class="stop-row${past ? ' is-past' : ''}">
         <span class="col-date">${fmtDate(s.date)}</span>
         ${timeCell}
@@ -328,7 +353,7 @@ function renderList() {
         <span class="col-venue">${s.venue}</span>
         <span class="col-owner">${s.owner || '—'}</span>
         <span class="col-badge">${badge}</span>
-        <span class="col-rep">${s.rep}</span>
+        <span class="col-rep">${repCell}</span>
       </div>`;
     }
   }
@@ -341,12 +366,21 @@ function renderList() {
   renderGroup(futureStops, false);
   el.innerHTML = html;
 
+  const hasActiveFilters = filters.months.size || filters.states.size || filters.reps.size;
   const confirmed = fs.filter(s => s.confirmed).length;
   const cities = new Set(fs.filter(s => s.city !== 'TBD').map(s => s.city)).size;
+  const hiddenUnconfirmed = hasActiveFilters ? 0 : stops.filter(s => !s.confirmed).length;
   document.getElementById('total-count').textContent = fs.length;
   document.getElementById('conf-count').textContent = confirmed;
-  document.getElementById('unconf-count').textContent = fs.length - confirmed;
+  document.getElementById('unconf-count').textContent = hasActiveFilters ? fs.filter(s => !s.confirmed).length : '—';
   document.getElementById('city-count').textContent = cities;
+  const hint = document.getElementById('unconfirmed-hint');
+  if (!hasActiveFilters && hiddenUnconfirmed > 0) {
+    document.getElementById('unconfirmed-hint-text').textContent = `${hiddenUnconfirmed} unconfirmed stop${hiddenUnconfirmed !== 1 ? 's' : ''} not shown`;
+    hint.style.display = 'block';
+  } else {
+    hint.style.display = 'none';
+  }
 }
 
 function switchTab(t) {
