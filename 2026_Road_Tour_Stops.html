@@ -11,7 +11,7 @@
     --text-primary: #1A1815; --text-secondary: #6B6860; --text-muted: #A09C96;
     --accent: #1A5C40; --accent-light: #EAF3DE; --accent-text: #1A5C40;
     --warn: #8C5A00; --warn-bg: #FEF3DC; --warn-border: #F5D690;
-    --month-rule: #D4CFC7; --tab-active-bg: #1A1815; --tab-active-text: #F7F5F0;
+    --month-rule: #D4CFC7; --tab-active-bg: #4e5b73; --tab-active-text: #F7F5F0;
     --past-border: #EAE7E2;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -39,7 +39,7 @@
   .chip-row { display: flex; flex-wrap: wrap; gap: 5px; }
   .chip { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 4px 11px; border-radius: 20px; border: 1px solid #D4CFC7; background: #FFFFFF; color: var(--text-secondary); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
   .chip:hover { border-color: #A09C96; color: var(--text-primary); }
-  .chip.active { background: #1A1815; color: #F7F5F0; border-color: #1A1815; }
+  .chip.active { background: #4e5b73; color: #F7F5F0; border-color: #4e5b73; }
   .filter-reset { font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 4px 0; text-decoration: underline; text-underline-offset: 2px; margin-left: auto; align-self: flex-end; }
   .filter-reset:hover { color: var(--text-primary); }
 
@@ -90,7 +90,6 @@
   .badge-confirmed { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; color: var(--accent-text); background: var(--accent-light); border-radius: 4px; padding: 2px 8px; }
   .badge-confirmed::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }
   .badge-unconfirmed { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; color: var(--warn); background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 4px; padding: 2px 8px; }
-  .badge-unconfirmed::before { content: '?'; font-family: 'DM Mono', monospace; font-size: 10px; }
   .stop-row.is-past .badge-confirmed { background: #F1EFE8; color: #B0ACA6; }
   .stop-row.is-past .badge-confirmed::before { background: #C8C5C0; }
   .stop-row.is-past .badge-unconfirmed { background: #F9F8F6; color: #B0ACA6; border-color: #E2DED6; }
@@ -122,7 +121,6 @@
 <header>
   <div class="inner">
     <h1>2026 Road Tour Schedule</h1>
-    <div class="meta">Event stop schedule — all rep territories</div>
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('list')">Sorted list</button>
       <button class="tab-btn" onclick="switchTab('map')">Map view</button>
@@ -154,7 +152,7 @@
       <div class="summary-divider"></div>
       <div class="summary-item"><span class="summary-num" id="conf-count">—</span><span class="summary-label">Confirmed</span></div>
       <div class="summary-divider"></div>
-      <div class="summary-item"><span class="summary-num" id="unconf-count">—</span><span class="summary-label">Not confirmed</span></div>
+      <div class="summary-item"><span class="summary-num" id="unconf-count">—</span><span class="summary-label">Unconfirmed</span></div>
       <div class="summary-divider"></div>
       <div class="summary-item"><span class="summary-num" id="city-count">—</span><span class="summary-label">Cities</span></div>
     </div>
@@ -209,23 +207,24 @@ const stops = [
   {date:'2026-06-02',time:'1PM – 5PM',city:'Tempe, AZ',state:'AZ',venue:'Hundred Mile Brewery',owner:'Shay Brummer',confirmed:true,rep:'Progressive',lat:33.4255,lng:-111.9400},
   {date:'2026-06-02',time:'1PM – 5PM',city:'Raleigh, NC',state:'NC',venue:'Lone Rider Brewery',owner:'Pete Sepesi',confirmed:true,rep:'High Tech Network',lat:35.7796,lng:-78.6382},
   // June 3–4
-  {date:'2026-06-03',time:null,city:'Raleigh, NC',state:'NC',venue:'Audio Advice',owner:'Pete Sepesi',confirmed:true,rep:'High Tech Network',lat:35.7796,lng:-78.6382},
+  {date:'2026-06-03',time:'8AM – 11AM',city:'Raleigh, NC',state:'NC',venue:'Audio Advice',owner:'Pete Sepesi',confirmed:true,rep:'High Tech Network',lat:35.7796,lng:-78.6382},
   {date:'2026-06-04',time:'10AM – 2PM',city:'Charlotte, NC',state:'NC',venue:'HTN Experience Center',owner:'Pete Sepesi',confirmed:true,rep:'High Tech Network',lat:35.2271,lng:-80.8431},
   // June 9–11
   {date:'2026-06-09',time:'10AM – 2PM',city:'Marietta, GA',state:'GA',venue:'Drafty Dane Brewery',owner:'Pete Sepesi',confirmed:true,rep:'High Tech Network',lat:33.9526,lng:-84.5499},
   {date:'2026-06-10',time:'8AM – 10AM',city:'Nashville, TN',state:'TN',venue:'Hifi Buys',owner:'Pete Sepesi',confirmed:true,rep:'High Tech Network',lat:36.1627,lng:-86.7816},
-  {date:'2026-06-10',time:null,city:'Denver, CO',state:'CO',venue:'TBD',owner:'TBD',confirmed:false,rep:'Progressive',lat:39.7392,lng:-104.9903},
+  {date:'2026-06-10',time:'10AM – 3PM',city:'Denver, CO',state:'CO',venue:'New Terrain Brewing',owner:'Shay Brummer',confirmed:false,rep:'Progressive',lat:39.7392,lng:-104.9903},
   {date:'2026-06-11',time:'12PM – 4PM',city:'Nashville, TN',state:'TN',venue:'Tailgate Brewery',owner:'Pete Sepesi',confirmed:true,rep:'High Tech Network',lat:36.1627,lng:-86.7816},
   // June 16–18
   {date:'2026-06-16',time:'12PM – 4PM',city:'Lindenhurst, NY',state:'NY',venue:'Sand City Brewing',owner:'Mike Hench',confirmed:true,rep:'Atlantic Integrated',lat:40.6887,lng:-73.3726},
   {date:'2026-06-16',time:null,city:'Costa Mesa, CA',state:'CA',venue:'Unified Experience Center',owner:'Shay Brummer',confirmed:true,rep:'Unified Reps',lat:33.6411,lng:-117.9187},
-  {date:'2026-06-17',time:'9AM – 1PM',city:'Norwalk, CT',state:'CT',venue:'SpaceCat',owner:'Mike Hench',confirmed:true,rep:'Atlantic Integrated',lat:41.1175,lng:-73.4079},
-  {date:'2026-06-17',time:'2PM – 6PM',city:'Norwalk, CT',state:'CT',venue:'SpaceCat',owner:'Mike Hench',confirmed:true,rep:'Atlantic Integrated',lat:41.1175,lng:-73.4079},
-  {date:'2026-06-17',time:null,city:'Salt Lake City, UT',state:'UT',venue:'Level Crossing Brewing',owner:'Shay Brummer',confirmed:false,rep:'Progressive',lat:40.7608,lng:-111.8910},
+  {date:'2026-06-17',time:'12PM – 4PM',city:'Norwalk, CT',state:'CT',venue:'SpaceCat',owner:'Mike Hench',confirmed:true,rep:'Atlantic Integrated',lat:41.1175,lng:-73.4079},
+  {date:'2026-06-17',time:null,city:'Salt Lake City, UT',state:'UT',venue:'Fisher Brewing',owner:'Shay Brummer',confirmed:false,rep:'Progressive',lat:40.7608,lng:-111.8910},
   {date:'2026-06-18',time:'10AM – 2PM',city:'Rockleigh, NJ',state:'NJ',venue:'AI Headquarters',owner:'Mike Hench',confirmed:true,rep:'Atlantic Integrated',lat:41.0126,lng:-73.9582},
   {date:'2026-06-18',time:null,city:'Los Angeles, CA',state:'CA',venue:'TBD',owner:'Shay Brummer',confirmed:false,rep:'Unified Reps',lat:34.0522,lng:-118.2437},
+  {date:'2026-06-18',time:'11AM – 3PM',city:'North Hollywood, CA',state:'CA',venue:'Lawless Brewing',owner:'Shay Brummer',confirmed:false,rep:'Unified Reps',lat:34.1869,lng:-118.3917},
   // June 23–25
   {date:'2026-06-23',time:null,city:'TBD',state:null,venue:'TBD',owner:'Mike Hench',confirmed:false,rep:'Access Reps',lat:null,lng:null},
+  {date:'2026-06-24',time:null,city:'San Diego, CA',state:'CA',venue:'TBD',owner:'Shay Brummer',confirmed:false,rep:'Unified Reps',lat:32.7157,lng:-117.1611},
   {date:'2026-06-25',time:'2PM – 6PM',city:'Easton, MA',state:'MA',venue:'Shovel Town Brewery',owner:'Mike Hench',confirmed:true,rep:'Access Reps',lat:42.0376,lng:-71.1120},
   // June 30 – July 2
   {date:'2026-06-30',time:'12PM – 4PM',city:'Lenexa, KS',state:'KS',venue:'Limitless Brewing',owner:'Mike Hench',confirmed:true,rep:'Performance Sales & Marketing',lat:38.9536,lng:-94.7336},
@@ -337,7 +336,7 @@ function renderList() {
       }
       const badge = s.confirmed
         ? '<span class="badge-confirmed">Confirmed</span>'
-        : '<span class="badge-unconfirmed">Not confirmed</span>';
+        : '<span class="badge-unconfirmed">Unconfirmed</span>';
       const timeCell = s.time
         ? `<span class="col-time">${s.time}</span>`
         : `<span class="col-time no-time">TBD</span>`;
