@@ -16,22 +16,22 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; }
-
+ 
   header { padding: 40px 48px 0; border-bottom: 1px solid var(--border); background: var(--surface); }
   .inner { max-width: 1136px; margin: 0 auto; }
   .eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
   h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
   .meta { margin-top: 6px; font-size: 14px; color: var(--text-secondary); }
-
+ 
   .tabs { display: flex; gap: 4px; padding: 24px 0 0; }
   .tab-btn { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 8px 20px; border-radius: 6px; border: 1px solid transparent; cursor: pointer; background: transparent; color: var(--text-secondary); transition: all 0.15s; }
   .tab-btn:hover { background: var(--bg); color: var(--text-primary); }
   .tab-btn.active { background: var(--tab-active-bg); color: var(--tab-active-text); }
-
+ 
   .main { padding: 28px 32px 64px; max-width: 1200px; margin: 0 auto; }
   .panel { display: none; }
   .panel.active { display: block; }
-
+ 
   /* FILTERS */
   .filter-bar { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; margin-bottom: 20px; padding: 16px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
   .filter-group { display: flex; flex-direction: column; gap: 6px; }
@@ -42,26 +42,26 @@
   .chip.active { background: #4e5b73; color: #F7F5F0; border-color: #4e5b73; }
   .filter-reset { font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 4px 0; text-decoration: underline; text-underline-offset: 2px; margin-left: auto; align-self: flex-end; }
   .filter-reset:hover { color: var(--text-primary); }
-
+ 
   /* SUMMARY BAR */
   .summary-bar { display: flex; gap: 24px; margin-bottom: 20px; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
   .summary-item { display: flex; flex-direction: column; gap: 2px; }
   .summary-num { font-size: 22px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; font-family: 'DM Mono', monospace; }
   .summary-label { font-size: 12px; color: var(--text-secondary); }
   .summary-divider { width: 1px; background: var(--border); align-self: stretch; }
-
+ 
   .no-results { padding: 40px 0; text-align: center; color: var(--text-muted); font-size: 14px; }
-
+ 
   /* PAST / FUTURE DIVIDER */
   .section-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0 4px; }
   .section-divider-line { flex: 1; height: 1px; background: #3B6D11; opacity: 0.25; }
   .section-divider-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #3B6D11; white-space: nowrap; }
-
+ 
   /* MONTH HEADERS */
   .month-label { font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); padding: 20px 0 8px; border-top: 1px solid var(--month-rule); }
   .month-label.first-label { border-top: none; padding-top: 0; }
   .month-label.past { color: #C0BDB8; border-top-color: var(--past-border); }
-
+ 
   /* STOP ROWS — 7 columns: date | time | city | venue | owner | badge | rep */
   .stop-row { display: grid; grid-template-columns: 62px 96px 130px 1fr 110px auto 130px; align-items: baseline; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; line-height: 1.5; }
   .stop-row:last-child { border-bottom: none; }
@@ -77,7 +77,7 @@
   .rep-link { font-size: 11px; color: var(--accent); text-decoration: none; text-align: right; }
   .rep-link:hover { text-decoration: underline; text-underline-offset: 2px; }
   .stop-row.is-past .rep-link { color: #C0BDB8; }
-
+ 
   /* Past row dimming */
   .stop-row.is-past .col-date,
   .stop-row.is-past .col-time { color: #C0BDB8; }
@@ -85,7 +85,7 @@
   .stop-row.is-past .col-venue,
   .stop-row.is-past .col-owner,
   .stop-row.is-past .col-rep { color: #C0BDB8; }
-
+ 
   /* BADGES */
   .badge-confirmed { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; color: var(--accent-text); background: var(--accent-light); border-radius: 4px; padding: 2px 8px; }
   .badge-confirmed::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }
@@ -93,7 +93,7 @@
   .stop-row.is-past .badge-confirmed { background: #F1EFE8; color: #B0ACA6; }
   .stop-row.is-past .badge-confirmed::before { background: #C8C5C0; }
   .stop-row.is-past .badge-unconfirmed { background: #F9F8F6; color: #B0ACA6; border-color: #E2DED6; }
-
+ 
   /* MAP */
   #map-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; position: relative; }
   #map-svg { display: block; width: 100%; }
@@ -107,7 +107,7 @@
   .tt-tag.past { color: var(--text-muted); }
   .map-legend { display: flex; gap: 20px; padding: 12px 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-secondary); flex-wrap: wrap; }
   .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
-
+ 
   @media (max-width: 780px) {
     header { padding: 28px 20px 0; }
     .main { padding-left: 20px; padding-right: 20px; }
@@ -117,7 +117,7 @@
 </style>
 </head>
 <body>
-
+ 
 <header>
   <div class="inner">
     <h1>2026 Road Tour Schedule</h1>
@@ -127,9 +127,9 @@
     </div>
   </div>
 </header>
-
+ 
 <div class="main">
-
+ 
   <div class="filter-bar">
     <div class="filter-group">
       <div class="filter-label">Month</div>
@@ -145,7 +145,7 @@
     </div>
     <button class="filter-reset" onclick="resetFilters()">Clear all filters</button>
   </div>
-
+ 
   <div id="panel-list" class="panel active">
     <div class="summary-bar">
       <div class="summary-item"><span class="summary-num" id="total-count">—</span><span class="summary-label">Showing</span></div>
@@ -161,7 +161,7 @@
     </div>
     <div id="stop-list"></div>
   </div>
-
+ 
   <div id="panel-map" class="panel">
     <div id="map-wrap">
       <div class="map-tooltip" id="tooltip"></div>
@@ -173,9 +173,9 @@
       </div>
     </div>
   </div>
-
+ 
 </div>
-
+ 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <script>
@@ -216,12 +216,11 @@ const stops = [
   {date:'2026-06-11',time:'12PM – 4PM',city:'Nashville, TN',state:'TN',venue:'Tailgate Brewery',owner:'Pete Sepesi',confirmed:true,rep:'High Tech Network',lat:36.1627,lng:-86.7816},
   // June 16–18
   {date:'2026-06-16',time:'12PM – 4PM',city:'Lindenhurst, NY',state:'NY',venue:'Sand City Brewing',owner:'Mike Hench',confirmed:true,rep:'Atlantic Integrated',lat:40.6887,lng:-73.3726},
-  {date:'2026-06-16',time:null,city:'Costa Mesa, CA',state:'CA',venue:'Unified Experience Center',owner:'Shay Brummer',confirmed:true,rep:'Unified Reps',lat:33.6411,lng:-117.9187},
+  {date:'2026-06-16',time:'11AM – 3PM',city:'Costa Mesa, CA',state:'CA',venue:'Unified Experience Center',owner:'Shay Brummer',confirmed:true,rep:'Unified Reps',lat:33.6411,lng:-117.9187},
   {date:'2026-06-17',time:'12PM – 4PM',city:'Norwalk, CT',state:'CT',venue:'SpaceCat',owner:'Mike Hench',confirmed:true,rep:'Atlantic Integrated',lat:41.1175,lng:-73.4079},
   {date:'2026-06-17',time:'11AM – 3PM',city:'Salt Lake City, UT',state:'UT',venue:'Fisher Brewing',owner:'Shay Brummer',confirmed:true,rep:'Progressive',lat:40.7608,lng:-111.8910},
   {date:'2026-06-18',time:'10AM – 2PM',city:'Rockleigh, NJ',state:'NJ',venue:'AI Headquarters',owner:'Mike Hench',confirmed:true,rep:'Atlantic Integrated',lat:41.0126,lng:-73.9582},
-  {date:'2026-06-18',time:null,city:'Los Angeles, CA',state:'CA',venue:'TBD',owner:'Shay Brummer',confirmed:false,rep:'Unified Reps',lat:34.0522,lng:-118.2437},
-  {date:'2026-06-18',time:'11AM – 3PM',city:'North Hollywood, CA',state:'CA',venue:'Lawless Brewing',owner:'Shay Brummer',confirmed:false,rep:'Unified Reps',lat:34.1869,lng:-118.3917},
+  {date:'2026-06-18',time:'11AM – 3PM',city:'North Hollywood, CA',state:'CA',venue:'Lawless Brewing',owner:'Shay Brummer',confirmed:true,rep:'Unified Reps',lat:34.1869,lng:-118.3917},
   // June 23–25
   {date:'2026-06-23',time:null,city:'TBD',state:null,venue:'TBD',owner:'Mike Hench',confirmed:false,rep:'Access Reps',lat:null,lng:null},
   {date:'2026-06-24',time:'10AM – 2PM',city:'San Diego, CA',state:'CA',venue:'Mission Brewing',owner:'Shay Brummer',confirmed:true,rep:'Unified Reps',lat:32.7157,lng:-117.1611},
@@ -234,29 +233,29 @@ const stops = [
   {date:'2026-07-28',time:null,city:'King of Prussia, PA',state:'PA',venue:'TBD',owner:'Pete Sepesi',confirmed:false,rep:'NuTech',lat:40.0866,lng:-75.3832},
   {date:'2026-07-30',time:'12PM – 4PM',city:'Dew Point, DE',state:'DE',venue:'Dew Point Brewing Company',owner:'Pete Sepesi',confirmed:true,rep:'NuTech',lat:38.9108,lng:-75.5277},
 ];
-
+ 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
+ 
 const TODAY = new Date(); TODAY.setHours(0,0,0,0);
 function parseDate(d) { const p = d.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
 function isPast(d) { return parseDate(d) < TODAY; }
 function fmtDate(d) { const p = d.split('-'); return MONTHS_SHORT[+p[1]-1] + ' ' + parseInt(p[2]); }
 function monthKey(d) { const p = d.split('-'); return p[1] + '-' + p[0]; }
 function monthLabel(d) { const p = d.split('-'); return MONTHS[+p[1]-1] + ' ' + p[0]; }
-
+ 
 const filters = { months: new Set(), states: new Set(), reps: new Set() };
 const allMonths = [...new Set(stops.map(s => monthKey(s.date)))].sort();
 const allStates = [...new Set(stops.map(s => s.state).filter(Boolean))].sort();
 const allReps = [...new Set(stops.map(s => s.rep))].sort();
-
+ 
 const REP_SHORT = {
   'Access Reps':'Access Reps', 'Atlantic Integrated':'Atlantic Int.', 'AWA Reps':'AWA Reps',
   'Bell & McCoy':'Bell & McCoy', 'High Tech Network':'Hi-Tech Net.',
   'LK & Associates':'LK & Assoc.', 'NuTech':'NuTech',
   'Performance Sales & Marketing':'Perf. Sales', 'Progressive':'Progressive', 'Unified Reps':'Unified Reps',
 };
-
+ 
 const REP_URL = {
   'Access Reps': 'https://accessreps.com/',
   'Atlantic Integrated': 'http://www.atlanticintegrated.com/',
@@ -269,7 +268,7 @@ const REP_URL = {
   'Progressive': 'https://progressive-ci.com/',
   'Unified Reps': 'https://www.unifiedrep.com/',
 };
-
+ 
 function buildChips() {
   document.getElementById('month-chips').innerHTML = allMonths.map(mk => {
     const p = mk.split('-'); const label = MONTHS_SHORT[+p[0]-1];
@@ -284,20 +283,20 @@ function buildChips() {
     return `<button class="chip" onclick="toggleChip(this,'reps','${safe}')" title="${r}">${short}</button>`;
   }).join('');
 }
-
+ 
 function toggleChip(btn, type, val) {
   const v = type === 'reps' ? decodeURIComponent(val) : val;
   if (filters[type].has(v)) { filters[type].delete(v); btn.classList.remove('active'); }
   else { filters[type].add(v); btn.classList.add('active'); }
   applyFilters();
 }
-
+ 
 function resetFilters() {
   ['months','states','reps'].forEach(t => filters[t].clear());
   document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
   applyFilters();
 }
-
+ 
 function filteredStops() {
   const hasActiveFilters = filters.months.size || filters.states.size || filters.reps.size;
   return stops.filter(s => {
@@ -308,9 +307,9 @@ function filteredStops() {
     return true;
   });
 }
-
+ 
 function applyFilters() { renderList(); if (window._mapDrawn) renderMapDots(); }
-
+ 
 function renderList() {
   const fs = filteredStops();
   const el = document.getElementById('stop-list');
@@ -319,11 +318,11 @@ function renderList() {
     ['total-count','conf-count','unconf-count','city-count'].forEach(id => document.getElementById(id).textContent = '0');
     return;
   }
-
+ 
   const pastStops = fs.filter(s => isPast(s.date));
   const futureStops = fs.filter(s => !isPast(s.date));
   let html = ''; let firstLabel = true;
-
+ 
   function renderGroup(group, past) {
     let curMonth = '';
     for (const s of group) {
@@ -356,7 +355,7 @@ function renderList() {
       </div>`;
     }
   }
-
+ 
   renderGroup(pastStops, true);
   if (pastStops.length && futureStops.length) {
     html += `<div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Upcoming stops</div><div class="section-divider-line"></div></div>`;
@@ -364,7 +363,7 @@ function renderList() {
   }
   renderGroup(futureStops, false);
   el.innerHTML = html;
-
+ 
   const hasActiveFilters = filters.months.size || filters.states.size || filters.reps.size;
   const confirmed = fs.filter(s => s.confirmed).length;
   const cities = new Set(fs.filter(s => s.city !== 'TBD').map(s => s.city)).size;
@@ -381,7 +380,7 @@ function renderList() {
     hint.style.display = 'none';
   }
 }
-
+ 
 function switchTab(t) {
   document.querySelectorAll('.tab-btn').forEach(b =>
     b.classList.toggle('active', b.textContent.trim() === (t === 'list' ? 'Sorted list' : 'Map view'))
@@ -390,7 +389,7 @@ function switchTab(t) {
   document.getElementById('panel-map').classList.toggle('active', t === 'map');
   if (t === 'map') { if (!window._mapDrawn) drawMap(); else renderMapDots(); }
 }
-
+ 
 function drawMap() {
   window._mapDrawn = true;
   const svg = d3.select('#map-svg');
@@ -403,14 +402,14 @@ function drawMap() {
     renderMapDots();
   });
 }
-
+ 
 function renderMapDots() {
   const svg = d3.select('#map-svg');
   const proj = d3.geoAlbersUsa().scale(1200).translate([480, 270]);
   const tooltip = document.getElementById('tooltip');
   const wrap = document.getElementById('map-wrap');
   svg.selectAll('circle.dot').remove();
-
+ 
   const fs = filteredStops().filter(s => s.lat && s.lng);
   const groups = {};
   for (const s of fs) {
@@ -418,7 +417,7 @@ function renderMapDots() {
     if (!groups[k]) groups[k] = { lat: s.lat, lng: s.lng, items: [] };
     groups[k].items.push(s);
   }
-
+ 
   Object.values(groups).forEach(g => {
     const p = proj([g.lng, g.lat]);
     if (!p) return;
@@ -426,7 +425,7 @@ function renderMapDots() {
     const someUnconf = g.items.some(i => !i.confirmed);
     const fill = allPast ? '#C0BDB8' : someUnconf ? '#B87D00' : '#1A5C40';
     const stroke = allPast ? '#A09C96' : someUnconf ? '#8C5A00' : '#0D3D28';
-
+ 
     svg.append('circle').attr('class','dot')
       .attr('cx', p[0]).attr('cy', p[1]).attr('r', 7)
       .attr('fill', fill).attr('stroke', stroke).attr('stroke-width','1.5')
@@ -449,7 +448,7 @@ function renderMapDots() {
       .on('mouseleave', () => { tooltip.style.opacity = '0'; });
   });
 }
-
+ 
 buildChips();
 renderList();
 </script>
