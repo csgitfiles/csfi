@@ -216,11 +216,12 @@ const stops = [
   {date:'2026-06-11',time:'12PM – 4PM',city:'Nashville, TN',state:'TN',venue:'Tailgate Brewery',owner:'Pete Sepesi',confirmed:true,rep:'High Tech Network',lat:36.1627,lng:-86.7816},
   // June 16–18
   {date:'2026-06-16',time:'12PM – 4PM',city:'Lindenhurst, NY',state:'NY',venue:'Sand City Brewing',owner:'Mike Hench',confirmed:true,rep:'Atlantic Integrated',lat:40.6887,lng:-73.3726},
-  {date:'2026-06-16',time:'11AM – 3PM',city:'Costa Mesa, CA',state:'CA',venue:'Unified Experience Center',owner:'Shay Brummer',confirmed:true,rep:'Unified Reps',lat:33.6411,lng:-117.9187},
+  {date:'2026-06-16',time:null,city:'Costa Mesa, CA',state:'CA',venue:'Unified Experience Center',owner:'Shay Brummer',confirmed:true,rep:'Unified Reps',lat:33.6411,lng:-117.9187},
   {date:'2026-06-17',time:'12PM – 4PM',city:'Norwalk, CT',state:'CT',venue:'SpaceCat',owner:'Mike Hench',confirmed:true,rep:'Atlantic Integrated',lat:41.1175,lng:-73.4079},
   {date:'2026-06-17',time:'11AM – 3PM',city:'Salt Lake City, UT',state:'UT',venue:'Fisher Brewing',owner:'Shay Brummer',confirmed:true,rep:'Progressive',lat:40.7608,lng:-111.8910},
   {date:'2026-06-18',time:'10AM – 2PM',city:'Rockleigh, NJ',state:'NJ',venue:'AI Headquarters',owner:'Mike Hench',confirmed:true,rep:'Atlantic Integrated',lat:41.0126,lng:-73.9582},
-  {date:'2026-06-18',time:'11AM – 3PM',city:'North Hollywood, CA',state:'CA',venue:'Lawless Brewing',owner:'Shay Brummer',confirmed:true,rep:'Unified Reps',lat:34.1869,lng:-118.3917},
+  {date:'2026-06-18',time:null,city:'Los Angeles, CA',state:'CA',venue:'TBD',owner:'Shay Brummer',confirmed:false,rep:'Unified Reps',lat:34.0522,lng:-118.2437},
+  {date:'2026-06-18',time:'11AM – 3PM',city:'North Hollywood, CA',state:'CA',venue:'Lawless Brewing',owner:'Shay Brummer',confirmed:false,rep:'Unified Reps',lat:34.1869,lng:-118.3917},
   // June 23–25
   {date:'2026-06-23',time:null,city:'TBD',state:null,venue:'TBD',owner:'Mike Hench',confirmed:false,rep:'Access Reps',lat:null,lng:null},
   {date:'2026-06-24',time:'10AM – 2PM',city:'San Diego, CA',state:'CA',venue:'Mission Brewing',owner:'Shay Brummer',confirmed:true,rep:'Unified Reps',lat:32.7157,lng:-117.1611},
@@ -229,9 +230,13 @@ const stops = [
   {date:'2026-06-30',time:'12PM – 4PM',city:'Lenexa, KS',state:'KS',venue:'Limitless Brewing',owner:'Mike Hench',confirmed:true,rep:'Performance Sales & Marketing',lat:38.9536,lng:-94.7336},
   {date:'2026-07-01',time:'12PM – 4PM',city:'Lenexa, KS',state:'KS',venue:'Limitless Brewing',owner:'Mike Hench',confirmed:true,rep:'Performance Sales & Marketing',lat:38.9536,lng:-94.7336},
   {date:'2026-07-02',time:'11AM – 3PM',city:'Des Moines, IA',state:'IA',venue:'Saint Kilda',owner:'Mike Hench',confirmed:true,rep:'Performance Sales & Marketing',lat:41.5868,lng:-93.6250},
+  // July 14
+  {date:'2026-07-14',time:'11AM – 4PM',city:'Mukilteo, WA',state:'WA',venue:'Tapped Public House',owner:'Pete Sepesi',confirmed:true,rep:'Market Share',lat:47.9129,lng:-122.3043},
   // July 28–30
   {date:'2026-07-28',time:null,city:'King of Prussia, PA',state:'PA',venue:'TBD',owner:'Pete Sepesi',confirmed:false,rep:'NuTech',lat:40.0866,lng:-75.3832},
+  {date:'2026-07-28',time:'11AM – 3PM',city:'Reno, NV',state:'NV',venue:'Schussboom Brewing',owner:'DJ Singleton',confirmed:true,rep:'Zone Pacific',lat:39.4168,lng:-119.8672},
   {date:'2026-07-30',time:'12PM – 4PM',city:'Dew Point, DE',state:'DE',venue:'Dew Point Brewing Company',owner:'Pete Sepesi',confirmed:true,rep:'NuTech',lat:38.9108,lng:-75.5277},
+  {date:'2026-07-30',time:'11AM – 3PM',city:'Sacramento, CA',state:'CA',venue:'Rock and Brews',owner:'DJ Singleton',confirmed:true,rep:'Zone Pacific',lat:38.5767,lng:-121.4784},
 ];
  
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -252,8 +257,9 @@ const allReps = [...new Set(stops.map(s => s.rep))].sort();
 const REP_SHORT = {
   'Access Reps':'Access Reps', 'Atlantic Integrated':'Atlantic Int.', 'AWA Reps':'AWA Reps',
   'Bell & McCoy':'Bell & McCoy', 'High Tech Network':'Hi-Tech Net.',
-  'LK & Associates':'LK & Assoc.', 'NuTech':'NuTech',
+  'LK & Associates':'LK & Assoc.', 'Market Share':'Market Share', 'NuTech':'NuTech',
   'Performance Sales & Marketing':'Perf. Sales', 'Progressive':'Progressive', 'Unified Reps':'Unified Reps',
+  'Zone Pacific':'Zone Pacific',
 };
  
 const REP_URL = {
@@ -263,10 +269,12 @@ const REP_URL = {
   'Bell & McCoy': 'https://www.bellandmccoy.com/companies/integrated-solutions',
   'High Tech Network': 'https://htninc.net/',
   'LK & Associates': 'https://lka-fl.com/',
+  'Market Share': 'https://www.mswired.com/',
   'NuTech': 'https://nutechgroup.com/',
   'Performance Sales & Marketing': 'https://www.performancesalesmktg.com/',
   'Progressive': 'https://progressive-ci.com/',
   'Unified Reps': 'https://www.unifiedrep.com/',
+  'Zone Pacific': 'https://www.zonepacific.com/',
 };
  
 function buildChips() {
@@ -454,3 +462,4 @@ renderList();
 </script>
 </body>
 </html>
+ 
