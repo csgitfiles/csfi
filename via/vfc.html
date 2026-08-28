@@ -65,17 +65,30 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
 <div class="page">
   <div class="page-header">
     <h1>CS VIA LED Module Forecast</h1>
-    <div class="sub">2,000 units &middot; Sales Sep 2026 – Aug 2027 &middot; Opening orders Aug 2026 &middot; MOQ: 12/variant &middot; 15-day lead time &middot; Safety stock: 84/12/56/12/36/24 (by variant) &middot; Optics: 24/angle &middot; Nodes: 12</div>
+    <div class="sub">2,000-unit target &middot; Sales Sep 2026 – Aug 2027 &middot; Opening orders Aug 2026 &middot; MOQ: 12/variant &middot; 15-day lead time &middot; Safety stock: 84/12/56/12/36/24 (by variant) &middot; Optics: 24/angle &middot; Nodes: 12</div>
+    <div class="sub" style="margin-top:4px">Preorders opened Sep 18, 2026 &middot; Shipping &amp; standard availability begins Oct 15, 2026 &middot; <span id="liveAsOf" style="color:var(--amber);font-weight:500">Living forecast — updates as actuals come in</span></div>
   </div>
 
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('modules',this)">Module ordering plan</button>
     <button class="tab-btn" onclick="switchTab('accessories',this)">Accessory ordering plan</button>
+    <button class="tab-btn" onclick="switchTab('fixtures',this)">Fixture forecast</button>
     <button class="tab-btn" onclick="switchTab('forecast',this)">Sales forecast</button>
   </div>
 
   <!-- TAB 1: Module ordering plan -->
   <div id="sec-modules" class="section visible">
+    <div class="card" style="border-left:3px solid var(--amber)">
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px">Live Preorder Actuals <span class="order-badge badge-reorder" style="background:rgba(186,117,23,0.12);color:var(--amber)">LIVE</span></div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:14px">Preorder window Sep 18 – Oct 15, 2026, split pro-rata by day count (13 days Sep / 15 days Oct) unless overridden below. Editing these numbers reforecasts Nov 2026 – Aug 2027 to true up to the annual target. Update as new preorder data comes in.</p>
+      <div class="qty-row" style="align-items:flex-end">
+        <div><label for="annualTarget" style="display:block;margin-bottom:4px">Annual module target</label><input id="annualTarget" class="qty-input" type="number" min="1" step="1" value="2000" style="width:100px"></div>
+        <div><label for="sepActual" style="display:block;margin-bottom:4px">Sep actual (units)</label><input id="sepActual" class="qty-input" type="number" min="0" step="1" value="49" style="width:100px"></div>
+        <div><label for="octActual" style="display:block;margin-bottom:4px">Oct actual (units)</label><input id="octActual" class="qty-input" type="number" min="0" step="1" value="55" style="width:100px"></div>
+        <div style="font-size:11px;color:var(--text3);max-width:220px">Sep/Oct variant mix defaults to the observed preorder mix (K10W Flood 51% &middot; K10W Spot 29% &middot; K5W Flood 20%). Nov–Aug keep the original planning mix.</div>
+      </div>
+      <div id="liveVsPlan" class="moq-note" style="margin-top:-4px"></div>
+    </div>
     <div class="card">
       <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:16px">
         <div style="font-size:18px;font-weight:600">Module Ordering Plan</div>
@@ -98,7 +111,7 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
       <div class="legend" id="modOrderLegend"></div>
       <div class="chart-wrap" style="height:240px;margin-bottom:24px"><canvas id="modOrderStackChart"></canvas></div>
       <div class="card-title">Full order schedule</div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Opening order placed Aug 2026. Reorders when any variant falls below its safety stock floor. Sep uses demo kit breakdown. 15-day lead time, same-month arrival.</p>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Opening order placed Aug 2026. Reorders when any variant falls below its safety stock floor. Sep &amp; Oct now use live preorder actuals (observed variant mix); Nov–Aug are rescaled to the annual target. 15-day lead time, same-month arrival.</p>
       <div style="overflow-x:auto"><table id="modOrderTable"></table></div>
       <div class="section-divider"></div>
       <div class="card-title">Sales forecast by variant</div>
@@ -114,7 +127,7 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
     <div class="card">
       <div style="font-size:18px;font-weight:600;margin-bottom:16px">Accessory Ordering Plan</div>
       <div style="font-size:15px;font-weight:600;margin-bottom:4px">Optics</div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:12px">100-unit MOQ per angle. 15° restored at 10% of mix. Sep uses demo kit breakdown (no 15° in demo kits).</p>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:12px">100-unit MOQ per angle. 15° restored at 10% of mix. Monthly totals follow the live module forecast (Sep/Oct now driven by preorder actuals); no angle-level preorder breakdown exists yet, so the standard mix is applied to all months until that data comes in.</p>
       <div class="qty-row">
         <label for="optQty">Target opening order:</label>
         <input id="optQty" class="qty-input" type="number" min="1" step="1" value="600">
@@ -128,14 +141,38 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
       <div style="overflow-x:auto"><table id="opticsVarTable"></table></div>
       <hr class="section-divider">
       <div style="font-size:15px;font-weight:600;margin-bottom:4px">Nodes <span class="sku-chip">HW-WN-RF-CSL</span></div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:16px">Opening order 144 units (3 MOQ). Sep usage ~88 units demo-driven. Oct–Aug seasonal baseline. 48-unit MOQ reorders. Safety stock: 12 units.</p>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Opening order 144 units (3 MOQ). 48-unit MOQ reorders. Safety stock: 12 units. 16 nodes preordered to date (9 standalone + 1 bundled in each of 7 Demo Kits).</p>
+      <div class="qty-row" style="align-items:flex-end;margin-bottom:14px">
+        <div><label for="nodeAnnualTarget" style="display:block;margin-bottom:4px">Annual node target</label><input id="nodeAnnualTarget" class="qty-input" type="number" min="1" step="1" value="176" style="width:100px"></div>
+        <div><label for="sepActualNodes" style="display:block;margin-bottom:4px">Sep actual</label><input id="sepActualNodes" class="qty-input" type="number" min="0" step="1" value="7" style="width:90px"></div>
+        <div><label for="octActualNodes" style="display:block;margin-bottom:4px">Oct actual</label><input id="octActualNodes" class="qty-input" type="number" min="0" step="1" value="9" style="width:90px"></div>
+        <div style="font-size:11px;color:var(--text3);max-width:220px">Original plan assumed Sep usage of ~88, largely tied to the 90-demo-kit rep expectation. Actuals are far below that so far — see Fixture forecast tab.</div>
+      </div>
       <div class="stat-grid" id="nodesStats"></div>
       <div class="card-title">Nodes ordering schedule</div>
       <div style="overflow-x:auto"><table id="nodesScheduleTable"></table></div>
     </div>
   </div>
 
-  <!-- TAB 3: Sales forecast -->
+  <!-- TAB 3: Fixture forecast -->
+  <div id="sec-fixtures" class="section">
+    <div class="card">
+      <div style="font-size:18px;font-weight:600;margin-bottom:4px">Fixture Forecast</div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:16px">5 primary VIA fixtures plus the VIA Node accessory. Modules/optics/nodes are the orderable components tracked on the other tabs — this tab forecasts the finished-fixture demand that consumes them.</p>
+      <div class="card-title">Housings</div>
+      <div style="overflow-x:auto;margin-bottom:16px"><table id="housingTable"></table></div>
+      <div class="card-title">Demo kit benchmark — reps' month-1 expectation</div>
+      <div id="demoKitGauge" style="margin-bottom:18px"></div>
+      <div class="card-title">Actuals to date &amp; fixture mix</div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Mix % defaults to the proportions observed in preorders so far (104 modules across 76 Directional Uplights + 7 Demo Kits). Only 2 of 5 fixture types have preorder data yet — edit the % fields as more comes in; they're normalized automatically.</p>
+      <div style="overflow-x:auto;margin-bottom:16px"><table id="fixtureMixTable"></table></div>
+      <div class="card-title">Projected annual fixture demand</div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Applies the mix % above to the live module target (<span id="fixtureAnnualRef"></span> units) from the Module ordering plan tab.</p>
+      <div style="overflow-x:auto"><table id="fixtureForecastTable"></table></div>
+    </div>
+  </div>
+
+  <!-- TAB 4: Sales forecast -->
   <div id="sec-forecast" class="section">
     <div class="card">
       <div class="card-title">Annual sales forecast by variant</div>
@@ -153,8 +190,36 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
 <script>
 var months = ['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'];
 var years  = ['2026','2026','2026','2026','2027','2027','2027','2027','2027','2027','2027','2027'];
-var sales  = [400,100,100,100,40,70,100,200,210,200,300,180];
-var nodeSales = [88,8,6,11,8,10,5,6,7,10,9,8];
+
+// Original Aug-2026 planning assumptions — kept static for "vs plan" comparisons.
+var ORIGINAL_SALES = [400,100,100,100,40,70,100,200,210,200,300,180];
+var ORIGINAL_NODE_SALES = [88,8,6,11,8,10,5,6,7,10,9,8];
+
+// Live arrays — recomputed by recomputeLive() whenever actuals/targets are edited.
+var sales = ORIGINAL_SALES.slice();
+var nodeSales = ORIGINAL_NODE_SALES.slice();
+
+// Preorder window: Sep 18 – Oct 15, 2026 (28 days: 13 in Sep, 15 in Oct)
+var SEP_DAYS = 13, OCT_DAYS = 15, WIN_DAYS = SEP_DAYS + OCT_DAYS;
+var DAY_FRACS = [SEP_DAYS/WIN_DAYS, OCT_DAYS/WIN_DAYS];
+
+// Modules actually preordered so far, by variant (K10W-Fl, K10W-Sp, K5W-Fl, K5W-Sp, R10W, R5W)
+var ACTUAL_MODULES_TOTAL = [53, 30, 21, 0, 0, 0]; // 46+7, 30, 21 — see fixture breakdown below
+var ACTUAL_MODULES_SUM = ACTUAL_MODULES_TOTAL.reduce(function(a,b){return a+b;},0); // 104
+var ACTUAL_MIX = ACTUAL_MODULES_TOTAL.map(function(v){return ACTUAL_MODULES_SUM?v/ACTUAL_MODULES_SUM:0;});
+
+// Fixtures actually preordered so far (units; Demo Kit counted in kits, not modules)
+var ACTUAL_FIXTURES = [
+  {label:'VIA Directional Uplight', housing:'VIADLH', usesOptics:true,  modsPerUnit:1, actual:76},
+  {label:'VIA Fixed Uplight',       housing:'VIAFLH', usesOptics:false, modsPerUnit:1, actual:0},
+  {label:'VIA Path Light',          housing:'VIAPLH', usesOptics:false, modsPerUnit:1, actual:0},
+  {label:'VIA Modern Path Light',   housing:'VIADLH', usesOptics:true,  modsPerUnit:1, actual:0},
+  {label:'VIA Tiki Torch',          housing:'VIAPLH', usesOptics:false, modsPerUnit:1, actual:0},
+  {label:'VIA Demo Kit',            housing:'mixed (4-fixture kit)', usesOptics:false, modsPerUnit:4, actual:7}
+];
+var DEMO_KIT_MONTH1_TARGET = 90; // rep survey expectation, first month
+var ACTUAL_NODES_STANDALONE = 9, ACTUAL_NODES_BUNDLED = 7; // 1 per Demo Kit
+var ACTUAL_NODES_TOTAL = ACTUAL_NODES_STANDALONE + ACTUAL_NODES_BUNDLED; // 16
 
 var variants = [
   {sku:'HW-CSL-FSDM09', label:'Ketra 10W Flood', short:'K·10W·Flood', color:'#3C3489', pct:0.378, tbd:false},
@@ -180,9 +245,8 @@ var V_MOQ = 12; var L_MOQ = 100; var N_MOQ = 48;
 var vPcts = variants.map(function(v){return v.pct;});
 var lPcts = lenses.map(function(l){return l.pct;});
 
-// September overrides: demo kit + regular distribution
-// Demo: 75 K10W Flood, 0 K10W Spot, 225 K5W Flood, 0 K5W Spot, 0 R10W, 0 R5W
-// Regular 100 pcs distributed by normal pcts
+// Original Aug-2026 plan for Sep (demo kit assumption, pre-preorder-data): kept for comparison only.
+// Demo: 75 K10W Flood, 0 K10W Spot, 225 K5W Flood, 0 K5W Spot, 0 R10W, 0 R5W + 100 regular-mix
 var SEP_DEMO_V = [75, 0, 225, 0, 0, 0];
 // Sep optics demo: 0×15°, 75×25°, 75×40°, 150×60° + regular 100
 var SEP_DEMO_L = [0, 75, 75, 150];
@@ -206,19 +270,19 @@ function distribute(total, pcts) {
 }
 function cmoq(val,moq){return Math.ceil(Math.max(val,0)/moq)*moq;}
 
-function sepV() {
+// Original (pre-preorder) Aug-2026 plan for Sep — kept only for the "vs plan" comparison.
+function originalSepV() {
   var reg=distribute(100,vPcts);
   return SEP_DEMO_V.map(function(d,i){return d+reg[i];});
 }
-function sepL() {
+function originalSepL() {
   var reg=distribute(100,lPcts);
   return SEP_DEMO_L.map(function(d,i){return d+reg[i];});
 }
+var ORIGINAL_SEP_V = originalSepV();
+var ORIGINAL_SEP_L = originalSepL();
 
-var SEP_V = sepV();
-var SEP_L = sepL();
-
-// Fixed opening order quantities (manually specified)
+// Fixed opening order quantities (manually specified, already placed — unaffected by reforecasting)
 var FIXED_OPENING = [276, 36, 204, 24, 132, 84]; // K10W-Fl, K10W-Sp, K5W-Fl, K5W-Sp, R10W, R5W
 var FIXED_OPENING_TOTAL = FIXED_OPENING.reduce(function(a,b){return a+b;},0); // 756
 
@@ -230,8 +294,25 @@ function moduleOpening(t){
 }
 function lensOpening(t){return lPcts.map(function(p){return cmoq(t*p,L_MOQ);});}
 
-function getMonthlyV(i){return i===0?SEP_V:distribute(sales[i],vPcts);}
-function getMonthlyL(i){return i===0?SEP_L:distribute(sales[i],lPcts);}
+// Sep (i=0) and Oct (i=1) now use the observed preorder variant mix instead of the
+// original planning mix, since we have real order data for those two months.
+function getMonthlyV(i){
+  if(i===0||i===1) return distribute(sales[i],ACTUAL_MIX);
+  return distribute(sales[i],vPcts);
+}
+function getMonthlyL(i){ return distribute(sales[i],lPcts); }
+
+// Rescales the 10 unallocated months (Nov–Aug) proportionally to their original weights
+// so the annual total lands exactly on target once Sep+Oct actuals are known.
+function reforecastRemaining(annualTarget, actualEarlySum, originalFull){
+  var remaining = Math.max(0, annualTarget - actualEarlySum);
+  var origRemaining = originalFull.slice(2);
+  var origRemainingTotal = origRemaining.reduce(function(a,b){return a+b;},0);
+  var weights = origRemainingTotal>0
+    ? origRemaining.map(function(v){return v/origRemainingTotal;})
+    : origRemaining.map(function(){return 1/origRemaining.length;});
+  return distribute(remaining, weights);
+}
 
 function calcModulePlan(ooV){
   var inv=ooV.slice(),n=6;
@@ -299,19 +380,16 @@ function buildScheduleTable(tableId,openingActual,plan,usageArr,safetyFloor){
     var invStyle=plan.endInv[i]<=floor?'color:'+amberT+';font-weight:500':'';
     h+='<tr style="background:'+rowBg+'"><td>'+m+'</td><td>'+years[i]+'</td><td>'+plan.startInv[i]+'</td>'+orderTd+'<td>'+use+'</td><td style="'+invStyle+'">'+plan.endInv[i]+'</td></tr>';
   });
-  h+='<tr class="total-row"><td></td><td>Total ordered</td><td>—</td><td>'+grandT+'</td><td>'+(usageArr?sum(usageArr):2000)+'</td><td>'+plan.endInv[11]+'</td></tr></tbody>';
+  h+='<tr class="total-row"><td></td><td>Total ordered</td><td>—</td><td>'+grandT+'</td><td>'+(usageArr?sum(usageArr):sum(sales))+'</td><td>'+plan.endInv[11]+'</td></tr></tbody>';
   t.innerHTML=h;
 }
 function sum(arr){return arr.reduce(function(a,b){return a+b;},0);}
 
-// Pre-compute forecast
-var monthly=months.map(function(_,i){return getMonthlyV(i);});
-var lMonthly=months.map(function(_,i){return getMonthlyL(i);});
-var annualV=variants.map(function(_,vi){return monthly.reduce(function(s,m){return s+m[vi];},0);});
-var annualL=lenses.map(function(_,li){return lMonthly.reduce(function(s,m){return s+m[li];},0);});
+// Forecast (recomputed by recomputeLive() whenever Live Actuals inputs change)
+var monthly, lMonthly, annualV, annualL;
 
 // Module chart
-var modChartInst=null, modOrderStackInst=null, modForecastInst=null;
+var modChartInst=null, modOrderStackInst=null, modForecastInst=null, forecastStackInst=null;
 
 function renderModules(target){
   var ooV=moduleOpening(target);
@@ -328,7 +406,7 @@ function renderModules(target){
     {label:'Opening order',  value:oa.toLocaleString(),      sub:'placed Aug 2026'},
     {label:'Total reorders', value:totalR.toLocaleString(),  sub:events+' order events'},
     {label:'Grand total',    value:grandT.toLocaleString(),  sub:'units ordered'},
-    {label:'Forecast sales', value:'2,000',                  sub:'Sep 2026 – Aug 2027'},
+    {label:'Forecast sales', value:sum(sales).toLocaleString(), sub:'Sep 2026 – Aug 2027'},
     {label:'End inventory',  value:plan.endInv[11].toLocaleString(), sub:'Aug 2027'},
     {label:'MOQ',            value:'12',                     sub:'per variant'},
   ]);
@@ -417,7 +495,7 @@ function renderModules(target){
     fh+='<td style="font-weight:500">'+sales[i]+'</td></tr>';
   });
   fh+='<tr class="total-row"><td>Annual</td><td>—</td>';
-  annualV.forEach(function(v){fh+='<td>'+v+'</td>';}); fh+='<td>2,000</td></tr></tbody>';
+  annualV.forEach(function(v){fh+='<td>'+v+'</td>';}); fh+='<td>'+sum(sales).toLocaleString()+'</td></tr></tbody>';
   ft.innerHTML=fh;
 }
 
@@ -475,21 +553,23 @@ function renderAccessories(target){
 }
 
 // Tab 3 forecast cards + chart
-(function(){
-  var g=document.getElementById('forecastCards');
+function renderForecastTab(){
+  var annualTotal=sum(sales);
+  var g=document.getElementById('forecastCards'); g.innerHTML='';
   variants.forEach(function(v,vi){
-    var pct=((annualV[vi]/2000)*100).toFixed(1);
+    var pct=annualTotal?((annualV[vi]/annualTotal)*100).toFixed(1):'0.0';
     g.innerHTML+='<div style="background:var(--surface2);border-left:3px solid '+v.color+';border-radius:0 8px 8px 0;padding:12px 14px">'
       +'<div style="font-size:10px;font-family:monospace;color:'+(v.tbd?'var(--amber)':'var(--text3)')+';margin-bottom:2px">'+v.sku+'</div>'
       +'<div style="font-size:12px;color:var(--text2);margin-bottom:6px">'+v.label+'</div>'
       +'<div style="font-size:20px;font-weight:600">'+annualV[vi]+'</div>'
       +'<div style="font-size:11px;color:var(--text3)">'+pct+'% of forecast</div></div>';
   });
-  var fl=document.getElementById('forecastLegend');
+  var fl=document.getElementById('forecastLegend'); fl.innerHTML='';
   variants.forEach(function(v){
     fl.innerHTML+='<span><span class="swatch" style="background:'+v.color+'"></span>'+v.label+'</span>';
   });
-  new Chart(document.getElementById('forecastStackedChart'),{
+  if(forecastStackInst){forecastStackInst.destroy();forecastStackInst=null;}
+  forecastStackInst=new Chart(document.getElementById('forecastStackedChart'),{
     type:'bar',
     data:{labels:months,datasets:variants.map(function(v,vi){return{label:v.label,data:monthly.map(function(m){return m[vi];}),backgroundColor:v.color,borderWidth:0,stack:'s'};})},
     options:{responsive:true,maintainAspectRatio:false,
@@ -506,14 +586,110 @@ function renderAccessories(target){
     h+='<td style="font-weight:500">'+sales[i]+'</td></tr>';
   });
   h+='<tr class="total-row"><td>Annual</td><td>—</td>';
-  annualV.forEach(function(v){h+='<td>'+v+'</td>';}); h+='<td>2,000</td></tr></tbody>';
+  annualV.forEach(function(v){h+='<td>'+v+'</td>';}); h+='<td>'+annualTotal.toLocaleString()+'</td></tr></tbody>';
   t.innerHTML=h;
-})();
+}
 
-renderModules(756);
-renderAccessories(600);
+function renderLiveVsPlan(annualTarget,sepA,octA){
+  var el=document.getElementById('liveVsPlan');
+  var origSepTotal=sum(ORIGINAL_SEP_V), origOctTotal=100; // original plan: Sep demo-adjusted total, Oct = regular 100
+  el.innerHTML='Original plan: Sep '+origSepTotal+' &middot; Oct '+origOctTotal+' &middot; annual 2,000 target.'
+    +' &nbsp;|&nbsp; Live: Sep '+sepA+' ('+(sepA-origSepTotal>=0?'+':'')+(sepA-origSepTotal)+') &middot; Oct '+octA+' ('+(octA-origOctTotal>=0?'+':'')+(octA-origOctTotal)+')'
+    +' &middot; Nov–Aug rescaled to reach the '+annualTarget.toLocaleString()+'-unit target.';
+}
 
-var debM,debA;
+function renderHousingTable(){
+  var t=document.getElementById('housingTable');
+  var housings={}; ACTUAL_FIXTURES.forEach(function(f){ if(!housings[f.housing]) housings[f.housing]=[]; housings[f.housing].push(f.label); });
+  var h='<thead><tr><th>Housing SKU</th><th>Used by</th><th>Optics?</th></tr></thead><tbody>';
+  Object.keys(housings).forEach(function(hs){
+    if(hs.indexOf('mixed')===0) return;
+    var usesOpt=ACTUAL_FIXTURES.filter(function(f){return f.housing===hs;})[0].usesOptics;
+    h+='<tr><td><span class="sku-chip">'+hs+'</span></td><td>'+housings[hs].join(', ')+'</td><td>'+(usesOpt?'Yes':'No')+'</td></tr>';
+  });
+  h+='</tbody>';
+  t.innerHTML=h;
+}
+
+function renderDemoKitGauge(){
+  var demoActual=ACTUAL_FIXTURES.filter(function(f){return f.label==='VIA Demo Kit';})[0].actual;
+  var pct=Math.min(100,(demoActual/DEMO_KIT_MONTH1_TARGET*100));
+  document.getElementById('demoKitGauge').innerHTML=
+    '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:6px">'
+    +'<span>'+demoActual+' of '+DEMO_KIT_MONTH1_TARGET+' expected (rep survey, month 1)</span><span>'+pct.toFixed(1)+'%</span></div>'
+    +'<div style="background:var(--surface2);border-radius:6px;height:10px;overflow:hidden"><div style="background:var(--amber);height:100%;width:'+pct+'%"></div></div>'
+    +'<div style="font-size:11px;color:var(--text3);margin-top:6px">Preorders are still open through Oct 15 — this is preorder-to-date, not a final month-1 result.</div>';
+}
+
+function renderFixtures(annualTarget){
+  renderHousingTable();
+  renderDemoKitGauge();
+  document.getElementById('fixtureAnnualRef').textContent=annualTarget.toLocaleString();
+
+  // Mix % table (editable, defaults to actual proportions in module-equivalent terms)
+  var modEquivTotal=ACTUAL_FIXTURES.reduce(function(s,f){return s+f.actual*f.modsPerUnit;},0);
+  var mt=document.getElementById('fixtureMixTable');
+  var mh='<thead><tr><th>Fixture</th><th>Housing</th><th>Actual (units)</th><th>Mod-equiv actual</th><th>Mix %</th></tr></thead><tbody>';
+  ACTUAL_FIXTURES.forEach(function(f,fi){
+    var modEquiv=f.actual*f.modsPerUnit;
+    var pct=modEquivTotal?(modEquiv/modEquivTotal*100):0;
+    mh+='<tr><td>'+f.label+(f.modsPerUnit>1?' <span class="sku-chip">×'+f.modsPerUnit+' mods/kit</span>':'')+'</td><td><span class="sku-chip">'+f.housing+'</span></td>'
+      +'<td>'+f.actual+'</td><td>'+modEquiv+'</td>'
+      +'<td><input type="number" class="qty-input fixMixInput" data-idx="'+fi+'" min="0" step="0.1" value="'+pct.toFixed(1)+'" style="width:70px;font-size:13px;padding:4px 8px"> %</td></tr>';
+  });
+  mh+='</tbody>';
+  mt.innerHTML=mh;
+
+  var mixInputs=document.querySelectorAll('.fixMixInput');
+  var rawMix=Array.prototype.map.call(mixInputs,function(inp){return parseFloat(inp.value)||0;});
+  var mixSum=rawMix.reduce(function(a,b){return a+b;},0)||1;
+  var normMix=rawMix.map(function(v){return v/mixSum;});
+
+  var ft=document.getElementById('fixtureForecastTable');
+  var fh='<thead><tr><th>Fixture</th><th>Mix %</th><th>Projected modules/yr</th><th>Projected units/yr</th></tr></thead><tbody>';
+  var totalUnits=0, totalMods=0;
+  ACTUAL_FIXTURES.forEach(function(f,fi){
+    var mods=Math.round(annualTarget*normMix[fi]);
+    var units=Math.round(mods/f.modsPerUnit);
+    totalUnits+=units; totalMods+=mods;
+    fh+='<tr><td>'+f.label+'</td><td>'+(normMix[fi]*100).toFixed(1)+'%</td><td>'+mods.toLocaleString()+'</td><td>'+units.toLocaleString()+'</td></tr>';
+  });
+  fh+='<tr class="total-row"><td>Total</td><td>100.0%</td><td>'+totalMods.toLocaleString()+'</td><td>'+totalUnits.toLocaleString()+'</td></tr></tbody>';
+  ft.innerHTML=fh;
+
+  mixInputs.forEach(function(inp){
+    inp.addEventListener('input',function(){ renderFixtures(parseInt(document.getElementById('annualTarget').value,10)||annualTarget); });
+  });
+}
+
+function recomputeLive(){
+  var annualTarget=parseInt(document.getElementById('annualTarget').value,10); if(!annualTarget||annualTarget<1) annualTarget=2000;
+  var sepA=parseInt(document.getElementById('sepActual').value,10); if(isNaN(sepA)||sepA<0) sepA=0;
+  var octA=parseInt(document.getElementById('octActual').value,10); if(isNaN(octA)||octA<0) octA=0;
+  var remaining=reforecastRemaining(annualTarget, sepA+octA, ORIGINAL_SALES);
+  sales=[sepA,octA].concat(remaining);
+
+  var nodeTarget=parseInt(document.getElementById('nodeAnnualTarget').value,10); if(!nodeTarget||nodeTarget<1) nodeTarget=176;
+  var sepN=parseInt(document.getElementById('sepActualNodes').value,10); if(isNaN(sepN)||sepN<0) sepN=0;
+  var octN=parseInt(document.getElementById('octActualNodes').value,10); if(isNaN(octN)||octN<0) octN=0;
+  var remainingN=reforecastRemaining(nodeTarget, sepN+octN, ORIGINAL_NODE_SALES);
+  nodeSales=[sepN,octN].concat(remainingN);
+
+  monthly=months.map(function(_,i){return getMonthlyV(i);});
+  lMonthly=months.map(function(_,i){return getMonthlyL(i);});
+  annualV=variants.map(function(_,vi){return monthly.reduce(function(s,m){return s+m[vi];},0);});
+  annualL=lenses.map(function(_,li){return lMonthly.reduce(function(s,m){return s+m[li];},0);});
+
+  renderLiveVsPlan(annualTarget,sepA,octA);
+  renderModules(parseInt(document.getElementById('modQty').value,10)||FIXED_OPENING_TOTAL);
+  renderAccessories(parseInt(document.getElementById('optQty').value,10)||600);
+  renderFixtures(annualTarget);
+  renderForecastTab();
+}
+
+recomputeLive();
+
+var debM,debA,debL;
 document.getElementById('modQty').addEventListener('input',function(){
   clearTimeout(debM); var val=parseInt(this.value,10);
   debM=setTimeout(function(){if(val&&val>0) renderModules(val);},350);
@@ -521,6 +697,11 @@ document.getElementById('modQty').addEventListener('input',function(){
 document.getElementById('optQty').addEventListener('input',function(){
   clearTimeout(debA); var val=parseInt(this.value,10);
   debA=setTimeout(function(){if(val&&val>0) renderAccessories(val);},350);
+});
+['annualTarget','sepActual','octActual','nodeAnnualTarget','sepActualNodes','octActualNodes'].forEach(function(id){
+  document.getElementById(id).addEventListener('input',function(){
+    clearTimeout(debL); debL=setTimeout(recomputeLive,350);
+  });
 });
 
 function switchTab(name,btn){
