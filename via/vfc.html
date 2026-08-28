@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS VIA Forecast</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f5f4;--surface:#ffffff;--surface2:#f0ede8;--border:rgba(0,0,0,0.1);
+  --text:#1a1a18;--text2:#5f5e5a;--text3:#888780;
+  --y26-bg:#fff7ed;--y27-bg:#eff6ff;--total-bg:#e8edf2;
+  --radius:10px;--navy:#1A2E4A;--blue:#185FA5;--amber:#BA7517;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1c1c1a;--surface:#262624;--surface2:#2e2e2b;--border:rgba(255,255,255,0.1);
+  --text:#e8e8e4;--text2:#aaa9a3;--text3:#66655f;
+  --y26-bg:rgba(186,117,23,0.14);--y27-bg:rgba(24,95,165,0.14);--total-bg:rgba(255,255,255,0.06);
+}}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;padding:24px;min-height:100vh}
+.page{max-width:1100px;margin:0 auto}
+.page-header{margin-bottom:28px}
+.page-header h1{font-size:22px;font-weight:600;margin-bottom:2px}
+.page-header .sub{font-size:12px;color:var(--text2)}
+.tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.tab-btn{background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:7px 16px;font-size:13px;font-family:inherit;color:var(--text2);cursor:pointer;transition:all .15s}
+.tab-btn:hover{background:var(--surface2);color:var(--text)}
+.tab-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:500}
+.section{display:none}.section.visible{display:block}
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;font-size:12px;color:var(--text2)}
+.legend span{display:flex;align-items:center;gap:5px}
+.swatch{width:10px;height:10px;border-radius:2px;display:inline-block;flex-shrink:0;vertical-align:middle}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:7px 8px;text-align:right;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.04em;color:var(--text2);background:var(--surface2);border-bottom:0.5px solid var(--border);white-space:nowrap}
+th:first-child,th:nth-child(2){text-align:left}
+td{padding:6px 8px;text-align:right;border-bottom:0.5px solid var(--border);color:var(--text);font-variant-numeric:tabular-nums}
+td:first-child,td:nth-child(2){text-align:left;color:var(--text2)}
+tr.y26 td{background:var(--y26-bg)}
+tr.y27 td{background:var(--y27-bg)}
+tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
+.chart-wrap{position:relative;width:100%}
+.stat-grid{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.stat{background:var(--surface2);border-radius:8px;padding:12px 16px;min-width:100px;flex:1}
+.stat-label{font-size:11px;color:var(--text2);margin-bottom:4px}
+.stat-value{font-size:18px;font-weight:600;color:var(--text);line-height:1.1}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.qty-row{display:flex;align-items:center;gap:12px;background:var(--surface2);border-radius:10px;padding:14px 18px;margin-bottom:20px;flex-wrap:wrap}
+.qty-row label{font-size:13px;color:var(--text2);white-space:nowrap}
+.qty-input{font-family:inherit;font-size:18px;font-weight:600;color:var(--text);background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:7px 14px;width:120px;text-align:center;outline:none;transition:border-color .15s}
+.qty-input:focus{border-color:var(--navy)}
+.moq-note{font-size:11px;color:var(--text3);margin:-12px 0 16px}
+.order-badge{display:inline-block;font-size:9px;font-weight:600;padding:1px 6px;border-radius:3px;vertical-align:middle;margin-left:5px;letter-spacing:.03em}
+.badge-opening{background:rgba(24,95,165,0.12);color:#185FA5}
+.badge-reorder{background:rgba(15,110,86,0.12);color:#0F6E56}
+.sku-chip{display:inline-block;font-size:10px;font-family:monospace;background:var(--surface2);border:0.5px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--text2);margin-left:3px;vertical-align:middle}
+.sku-tbd{color:var(--amber) !important;border-color:rgba(186,117,23,0.3) !important;background:rgba(186,117,23,0.06) !important}
+.section-divider{border:none;border-top:1px solid var(--border);margin:28px 0}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-header">
+    <h1>CS VIA LED Module Forecast</h1>
+    <div class="sub">2,000 units &middot; Sales Sep 2026 – Aug 2027 &middot; Opening orders Aug 2026 &middot; MOQ: 12/variant &middot; 15-day lead time &middot; Safety stock: 84/12/56/12/36/24 (by variant) &middot; Optics: 24/angle &middot; Nodes: 12</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('modules',this)">Module ordering plan</button>
+    <button class="tab-btn" onclick="switchTab('accessories',this)">Accessory ordering plan</button>
+    <button class="tab-btn" onclick="switchTab('forecast',this)">Sales forecast</button>
+  </div>
+
+  <!-- TAB 1: Module ordering plan -->
+  <div id="sec-modules" class="section visible">
+    <div class="card">
+      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:16px">
+        <div style="font-size:18px;font-weight:600">Module Ordering Plan</div>
+        <div style="font-size:12px;color:var(--text2)">12-unit MOQ per variant &middot; 15-day lead time</div>
+      </div>
+      <div class="qty-row">
+        <label for="modQty">Target opening order:</label>
+        <input id="modQty" class="qty-input" type="number" min="1" step="1" value="756">
+        <span style="font-size:12px;color:var(--text3)">units &mdash; actual rounded up per variant to 12-unit MOQ</span>
+      </div>
+      <div id="modActualQty" class="moq-note"></div>
+      <div class="stat-grid" id="modStats"></div>
+      <div class="card-title">Order cadence &amp; inventory</div>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--blue)"></span>Order placed</span>
+        <span><span class="swatch" style="background:var(--amber)"></span>End-of-month inventory</span>
+      </div>
+      <div class="chart-wrap" style="height:230px;margin-bottom:24px"><canvas id="modChart"></canvas></div>
+      <div class="card-title">Order breakdown by variant</div>
+      <div class="legend" id="modOrderLegend"></div>
+      <div class="chart-wrap" style="height:240px;margin-bottom:24px"><canvas id="modOrderStackChart"></canvas></div>
+      <div class="card-title">Full order schedule</div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Opening order placed Aug 2026. Reorders when any variant falls below its safety stock floor. Sep uses demo kit breakdown. 15-day lead time, same-month arrival.</p>
+      <div style="overflow-x:auto"><table id="modOrderTable"></table></div>
+      <div class="section-divider"></div>
+      <div class="card-title">Sales forecast by variant</div>
+      <div class="legend" id="modForecastLegend"></div>
+      <div class="chart-wrap" style="height:240px;margin-bottom:24px"><canvas id="modForecastChart"></canvas></div>
+      <div class="card-title">Monthly sales forecast by variant</div>
+      <div style="overflow-x:auto"><table id="modForecastTable"></table></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: Accessory ordering plan -->
+  <div id="sec-accessories" class="section">
+    <div class="card">
+      <div style="font-size:18px;font-weight:600;margin-bottom:16px">Accessory Ordering Plan</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px">Optics</div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:12px">100-unit MOQ per angle. 15° restored at 10% of mix. Sep uses demo kit breakdown (no 15° in demo kits).</p>
+      <div class="qty-row">
+        <label for="optQty">Target opening order:</label>
+        <input id="optQty" class="qty-input" type="number" min="1" step="1" value="600">
+        <span style="font-size:12px;color:var(--text3)">units &mdash; rounded up per angle to 100-unit MOQ</span>
+      </div>
+      <div id="optActualQty" class="moq-note"></div>
+      <div class="stat-grid" id="opticsStats"></div>
+      <div class="card-title">Optics ordering schedule</div>
+      <div style="overflow-x:auto;margin-bottom:12px"><table id="opticsScheduleTable"></table></div>
+      <div class="card-title" style="margin-top:16px">Order breakdown by angle</div>
+      <div style="overflow-x:auto"><table id="opticsVarTable"></table></div>
+      <hr class="section-divider">
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px">Nodes <span class="sku-chip">HW-WN-RF-CSL</span></div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:16px">Opening order 144 units (3 MOQ). Sep usage ~88 units demo-driven. Oct–Aug seasonal baseline. 48-unit MOQ reorders. Safety stock: 12 units.</p>
+      <div class="stat-grid" id="nodesStats"></div>
+      <div class="card-title">Nodes ordering schedule</div>
+      <div style="overflow-x:auto"><table id="nodesScheduleTable"></table></div>
+    </div>
+  </div>
+
+  <!-- TAB 3: Sales forecast -->
+  <div id="sec-forecast" class="section">
+    <div class="card">
+      <div class="card-title">Annual sales forecast by variant</div>
+      <div id="forecastCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px"></div>
+      <div class="legend" id="forecastLegend"></div>
+      <div class="chart-wrap" style="height:320px"><canvas id="forecastStackedChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Monthly sales forecast by variant</div>
+      <div style="overflow-x:auto"><table id="forecastTable"></table></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var months = ['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'];
+var years  = ['2026','2026','2026','2026','2027','2027','2027','2027','2027','2027','2027','2027'];
+var sales  = [400,100,100,100,40,70,100,200,210,200,300,180];
+var nodeSales = [88,8,6,11,8,10,5,6,7,10,9,8];
+
+var variants = [
+  {sku:'HW-CSL-FSDM09', label:'Ketra 10W Flood', short:'K·10W·Flood', color:'#3C3489', pct:0.378, tbd:false},
+  {sku:'HW-CSL-FSSP09', label:'Ketra 10W Spot',  short:'K·10W·Spot',  color:'#7F77DD', pct:0.042, tbd:false},
+  {sku:'HW-CSL-FSDM04', label:'Ketra 5W Flood',  short:'K·5W·Flood',  color:'#0F6E56', pct:0.252, tbd:false},
+  {sku:'HW-CSL-FSSP04', label:'Ketra 5W Spot',   short:'K·5W·Spot',   color:'#5DCAA5', pct:0.028, tbd:false},
+  {sku:'HW-CSL-TWXX09', label:'Rania 10W',        short:'R·10W',       color:'#854F0B', pct:0.180, tbd:false},
+  {sku:'HW-CSL-TWXX04', label:'Rania 5W',         short:'R·5W',        color:'#185FA5', pct:0.120, tbd:false},
+];
+var lenses = [
+  {label:'15°', sku:'UN-D2OPHO15', color:'#042C53', pct:0.10},
+  {label:'25°', sku:'UN-D2OPHO25', color:'#85B7EB', pct:0.30},
+  {label:'40°', sku:'UN-D2OPHO40', color:'#185FA5', pct:0.40},
+  {label:'60°', sku:'UN-D2OPHO60', color:'#B5D4F4', pct:0.20},
+];
+
+// Safety stock per variant: K10W Flood, K10W Spot, K5W Flood, K5W Spot, R10W, R5W
+var V_SAFETY = [84, 12, 56, 12, 36, 24];
+var L_SAFETY = 24;
+var N_SAFETY = 12;
+var V_MOQ = 12; var L_MOQ = 100; var N_MOQ = 48;
+
+var vPcts = variants.map(function(v){return v.pct;});
+var lPcts = lenses.map(function(l){return l.pct;});
+
+// September overrides: demo kit + regular distribution
+// Demo: 75 K10W Flood, 0 K10W Spot, 225 K5W Flood, 0 K5W Spot, 0 R10W, 0 R5W
+// Regular 100 pcs distributed by normal pcts
+var SEP_DEMO_V = [75, 0, 225, 0, 0, 0];
+// Sep optics demo: 0×15°, 75×25°, 75×40°, 150×60° + regular 100
+var SEP_DEMO_L = [0, 75, 75, 150];
+
+var isDark = matchMedia('(prefers-color-scheme:dark)').matches;
+var gridC  = isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.07)';
+var tickC  = isDark?'#aaa':'#555';
+var blueC  = isDark?'rgba(122,175,239,0.85)':'rgba(24,95,165,0.8)';
+var amberC = isDark?'#f0b84c':'#BA7517';
+var blueT  = isDark?'#7aafef':'#185FA5';
+var greenT = isDark?'#5cbfa0':'#0F6E56';
+var amberT = isDark?'#f0b84c':'#BA7517';
+
+function distribute(total, pcts) {
+  var raw=pcts.map(function(p){return total*p;});
+  var fl=raw.map(function(v){return Math.floor(v);});
+  var rem=total-fl.reduce(function(a,b){return a+b;},0);
+  var idx=raw.map(function(_,i){return i;}).sort(function(a,b){return(raw[b]-fl[b])-(raw[a]-fl[a]);});
+  var res=fl.slice(); for(var i=0;i<rem;i++) res[idx[i]]++;
+  return res;
+}
+function cmoq(val,moq){return Math.ceil(Math.max(val,0)/moq)*moq;}
+
+function sepV() {
+  var reg=distribute(100,vPcts);
+  return SEP_DEMO_V.map(function(d,i){return d+reg[i];});
+}
+function sepL() {
+  var reg=distribute(100,lPcts);
+  return SEP_DEMO_L.map(function(d,i){return d+reg[i];});
+}
+
+var SEP_V = sepV();
+var SEP_L = sepL();
+
+// Fixed opening order quantities (manually specified)
+var FIXED_OPENING = [276, 36, 204, 24, 132, 84]; // K10W-Fl, K10W-Sp, K5W-Fl, K5W-Sp, R10W, R5W
+var FIXED_OPENING_TOTAL = FIXED_OPENING.reduce(function(a,b){return a+b;},0); // 756
+
+function moduleOpening(t){
+  // If target matches our fixed opening total, return exact per-variant quantities
+  if(t === FIXED_OPENING_TOTAL) return FIXED_OPENING.slice();
+  // Otherwise distribute proportionally rounded up to MOQ
+  return vPcts.map(function(p){return cmoq(t*p,V_MOQ);});
+}
+function lensOpening(t){return lPcts.map(function(p){return cmoq(t*p,L_MOQ);});}
+
+function getMonthlyV(i){return i===0?SEP_V:distribute(sales[i],vPcts);}
+function getMonthlyL(i){return i===0?SEP_L:distribute(sales[i],lPcts);}
+
+function calcModulePlan(ooV){
+  var inv=ooV.slice(),n=6;
+  var orders=[],ordersV=[],startInv=[],endInv=[];
+  for(var i=0;i<12;i++){
+    var sv=getMonthlyV(i); startInv.push(inv.reduce(function(a,b){return a+b;},0));
+    var ov=new Array(n).fill(0);
+    for(var vi=0;vi<n;vi++){var sf=V_SAFETY[vi]+sv[vi]-inv[vi]; if(sf>0) ov[vi]=cmoq(sf,V_MOQ);}
+    for(var vi=0;vi<n;vi++) inv[vi]+=ov[vi];
+    for(var vi=0;vi<n;vi++) inv[vi]-=sv[vi];
+    orders.push(ov.reduce(function(a,b){return a+b;},0)); ordersV.push(ov.slice());
+    endInv.push(inv.reduce(function(a,b){return a+b;},0));
+  }
+  return {orders:orders,ordersV:ordersV,startInv:startInv,endInv:endInv};
+}
+
+function calcAccPlan(ooL){
+  var inv=ooL.slice(),n=4;
+  var orders=[],ordersV=[],startInv=[],endInv=[];
+  for(var i=0;i<12;i++){
+    var sv=getMonthlyL(i); startInv.push(inv.reduce(function(a,b){return a+b;},0));
+    var ov=new Array(n).fill(0);
+    for(var vi=0;vi<n;vi++){var sf=L_SAFETY+sv[vi]-inv[vi]; if(sf>0) ov[vi]=cmoq(sf,L_MOQ);}
+    for(var vi=0;vi<n;vi++) inv[vi]+=ov[vi];
+    for(var vi=0;vi<n;vi++) inv[vi]-=sv[vi];
+    orders.push(ov.reduce(function(a,b){return a+b;},0)); ordersV.push(ov.slice());
+    endInv.push(inv.reduce(function(a,b){return a+b;},0));
+  }
+  return {orders:orders,ordersV:ordersV,startInv:startInv,endInv:endInv};
+}
+
+function calcNodesPlan(){
+  var inv=144,orders=[],startInv=[],endInv=[];
+  for(var i=0;i<12;i++){
+    startInv.push(inv); var sf=N_SAFETY+nodeSales[i]-inv,order=0;
+    if(sf>0){order=cmoq(sf,N_MOQ); inv+=order;}
+    inv-=nodeSales[i]; orders.push(order); endInv.push(inv);
+  }
+  return {orders:orders,startInv:startInv,endInv:endInv};
+}
+
+function buildStats(el,items){
+  el.innerHTML=items.map(function(s){
+    return '<div class="stat"><div class="stat-label">'+s.label+'</div><div class="stat-value">'+s.value+'</div><div class="stat-sub">'+s.sub+'</div></div>';
+  }).join('');
+}
+
+function openingRowHtml(qty){
+  return '<tr style="background:var(--y26-bg)"><td><strong>Aug</strong></td><td>2026</td><td>—</td>'
+    +'<td style="font-weight:600;color:'+blueT+'">'+qty+'<span class="order-badge badge-opening">OPENING</span></td>'
+    +'<td>—</td><td>'+qty+'</td></tr>';
+}
+
+function buildScheduleTable(tableId,openingActual,plan,usageArr,safetyFloor){
+  var floor=safetyFloor||0;
+  var t=document.getElementById(tableId);
+  var totalR=plan.orders.reduce(function(a,b){return a+b;},0);
+  var grandT=openingActual+totalR;
+  var h='<thead><tr><th>Month</th><th>Year</th><th>Start inv.</th><th>Order placed</th><th>'+(usageArr?'Usage':'Sales')+'</th><th>End inv.</th></tr></thead><tbody>';
+  h+=openingRowHtml(openingActual);
+  months.forEach(function(m,i){
+    var is26=years[i]==='2026',rowBg=is26?'var(--y26-bg)':'var(--y27-bg)';
+    var use=usageArr?usageArr[i]:sales[i];
+    var orderTd=plan.orders[i]>0?'<td style="font-weight:600;color:'+greenT+'">'+plan.orders[i]+'<span class="order-badge badge-reorder">REORDER</span></td>':'<td style="color:var(--text3)">—</td>';
+    var invStyle=plan.endInv[i]<=floor?'color:'+amberT+';font-weight:500':'';
+    h+='<tr style="background:'+rowBg+'"><td>'+m+'</td><td>'+years[i]+'</td><td>'+plan.startInv[i]+'</td>'+orderTd+'<td>'+use+'</td><td style="'+invStyle+'">'+plan.endInv[i]+'</td></tr>';
+  });
+  h+='<tr class="total-row"><td></td><td>Total ordered</td><td>—</td><td>'+grandT+'</td><td>'+(usageArr?sum(usageArr):2000)+'</td><td>'+plan.endInv[11]+'</td></tr></tbody>';
+  t.innerHTML=h;
+}
+function sum(arr){return arr.reduce(function(a,b){return a+b;},0);}
+
+// Pre-compute forecast
+var monthly=months.map(function(_,i){return getMonthlyV(i);});
+var lMonthly=months.map(function(_,i){return getMonthlyL(i);});
+var annualV=variants.map(function(_,vi){return monthly.reduce(function(s,m){return s+m[vi];},0);});
+var annualL=lenses.map(function(_,li){return lMonthly.reduce(function(s,m){return s+m[li];},0);});
+
+// Module chart
+var modChartInst=null, modOrderStackInst=null, modForecastInst=null;
+
+function renderModules(target){
+  var ooV=moduleOpening(target);
+  var oa=ooV.reduce(function(a,b){return a+b;},0);
+  document.getElementById('modActualQty').textContent='Actual opening order: '+oa+' units — '
+    +ooV.map(function(v,i){return variants[i].short+': '+v;}).join('  ·  ');
+
+  var plan=calcModulePlan(ooV);
+  var totalR=plan.orders.reduce(function(a,b){return a+b;},0);
+  var grandT=oa+totalR;
+  var events=plan.orders.filter(function(v){return v>0;}).length;
+
+  buildStats(document.getElementById('modStats'),[
+    {label:'Opening order',  value:oa.toLocaleString(),      sub:'placed Aug 2026'},
+    {label:'Total reorders', value:totalR.toLocaleString(),  sub:events+' order events'},
+    {label:'Grand total',    value:grandT.toLocaleString(),  sub:'units ordered'},
+    {label:'Forecast sales', value:'2,000',                  sub:'Sep 2026 – Aug 2027'},
+    {label:'End inventory',  value:plan.endInv[11].toLocaleString(), sub:'Aug 2027'},
+    {label:'MOQ',            value:'12',                     sub:'per variant'},
+  ]);
+
+  var chartLabels=['Aug'].concat(months);
+  var chartYears=['2026'].concat(years);
+  var chartOrders=[oa].concat(plan.orders);
+  var chartInv=[oa].concat(plan.endInv);
+
+  if(modChartInst){modChartInst.destroy();modChartInst=null;}
+  modChartInst=new Chart(document.getElementById('modChart'),{
+    type:'bar',
+    data:{labels:chartLabels,datasets:[
+      {label:'Order',data:chartOrders,backgroundColor:chartOrders.map(function(v){return v>0?blueC:'rgba(0,0,0,0)';}),borderRadius:3,borderSkipped:false,order:2},
+      {label:'End inventory',data:chartInv,type:'line',borderColor:amberC,backgroundColor:'transparent',pointRadius:4,pointHoverRadius:6,borderWidth:2,tension:0.3,order:1}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{
+        title:function(i){return chartLabels[i[0].dataIndex]+' '+chartYears[i[0].dataIndex];},
+        label:function(c){return c.dataset.label==='Order'&&c.parsed.y>0?' Order: '+c.parsed.y+' units':c.dataset.label==='End inventory'?' Inventory: '+c.parsed.y+' units':null;}
+      }}},
+      scales:{x:{grid:{display:false},ticks:{color:tickC,autoSkip:false,maxRotation:0}},
+              y:{grid:{color:gridC},ticks:{color:tickC},min:0,title:{display:true,text:'units',color:tickC,font:{size:11}}}}}
+  });
+
+  var ordersByVariant=variants.map(function(_,vi){return [ooV[vi]].concat(plan.ordersV.map(function(ov){return ov[vi];}));});
+  var legEl=document.getElementById('modOrderLegend'); legEl.innerHTML='';
+  variants.forEach(function(v){
+    legEl.innerHTML+='<span><span class="swatch" style="background:'+v.color+'"></span>'+v.label+' <span class="sku-chip'+(v.tbd?' sku-tbd':'')+'">'+v.sku+'</span></span>';
+  });
+
+  if(modOrderStackInst){modOrderStackInst.destroy();modOrderStackInst=null;}
+  modOrderStackInst=new Chart(document.getElementById('modOrderStackChart'),{
+    type:'bar',
+    data:{labels:chartLabels,datasets:variants.map(function(v,vi){return{label:v.label,data:ordersByVariant[vi],backgroundColor:v.color,borderWidth:0,stack:'s'};})},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{
+        title:function(i){return chartLabels[i[0].dataIndex]+' '+chartYears[i[0].dataIndex];},
+        label:function(c){return c.parsed.y>0?' '+c.dataset.label+': '+c.parsed.y:null;}
+      }}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{color:tickC,autoSkip:false,maxRotation:0}},
+              y:{stacked:true,grid:{color:gridC},ticks:{color:tickC},title:{display:true,text:'units',color:tickC,font:{size:11}}}}}
+  });
+
+  // Full order table
+  var t=document.getElementById('modOrderTable');
+  var h='<thead><tr><th>Month</th><th>Year</th><th>Order total</th>';
+  variants.forEach(function(v){
+    h+='<th><span class="swatch" style="background:'+v.color+';margin-right:3px"></span>'+v.short+'<br><span class="sku-chip'+(v.tbd?' sku-tbd':'')+'" style="font-size:8px">'+v.sku+'</span></th>';
+  });
+  h+='</tr></thead><tbody>';
+  h+='<tr style="background:var(--y26-bg)"><td><strong>Aug</strong></td><td>2026</td><td style="font-weight:600;color:'+blueT+'">'+oa+'<span class="order-badge badge-opening">OPENING</span></td>';
+  ooV.forEach(function(v){h+='<td>'+v+'</td>';});
+  h+='</tr>';
+  var vTotals=ooV.slice();
+  months.forEach(function(m,i){
+    if(plan.orders[i]===0) return;
+    var is26=years[i]==='2026',rowBg=is26?'var(--y26-bg)':'var(--y27-bg)';
+    plan.ordersV[i].forEach(function(v,vi){vTotals[vi]+=v;});
+    h+='<tr style="background:'+rowBg+'"><td>'+m+'</td><td>'+years[i]+'</td><td style="font-weight:600;color:'+greenT+'">'+plan.orders[i]+'<span class="order-badge badge-reorder">REORDER</span></td>';
+    plan.ordersV[i].forEach(function(v){h+='<td>'+v+'</td>';});
+    h+='</tr>';
+  });
+  h+='<tr class="total-row"><td>Total</td><td>—</td><td>'+grandT+'</td>';
+  vTotals.forEach(function(v){h+='<td>'+v+'</td>';});
+  h+='</tr></tbody>';
+  t.innerHTML=h;
+
+  // Forecast chart + table in Tab 1
+  if(modForecastInst){modForecastInst.destroy();modForecastInst=null;}
+  modForecastInst=new Chart(document.getElementById('modForecastChart'),{
+    type:'bar',
+    data:{labels:months,datasets:variants.map(function(v,vi){return{label:v.label,data:monthly.map(function(m){return m[vi];}),backgroundColor:v.color,borderWidth:0,stack:'s'};})},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:function(i){return months[i[0].dataIndex]+' '+years[i[0].dataIndex];},label:function(c){return ' '+c.dataset.label+': '+c.parsed.y;}}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{color:tickC,autoSkip:false,maxRotation:0}},y:{stacked:true,grid:{color:gridC},ticks:{color:tickC},max:450}}}
+  });
+
+  var ft=document.getElementById('modForecastTable');
+  var fh='<thead><tr><th>Month</th><th>Year</th>';
+  variants.forEach(function(v){fh+='<th><span class="swatch" style="background:'+v.color+';margin-right:3px"></span>'+v.short+'<br><span class="sku-chip'+(v.tbd?' sku-tbd':'')+'" style="font-size:8px">'+v.sku+'</span></th>';});
+  fh+='<th>Total</th></tr></thead><tbody>';
+  months.forEach(function(m,i){
+    fh+='<tr class="'+(years[i]==='2026'?'y26':'y27')+'"><td>'+m+'</td><td>'+years[i]+'</td>';
+    monthly[i].forEach(function(v){fh+='<td>'+v+'</td>';});
+    fh+='<td style="font-weight:500">'+sales[i]+'</td></tr>';
+  });
+  fh+='<tr class="total-row"><td>Annual</td><td>—</td>';
+  annualV.forEach(function(v){fh+='<td>'+v+'</td>';}); fh+='<td>2,000</td></tr></tbody>';
+  ft.innerHTML=fh;
+}
+
+function renderAccessories(target){
+  var ooL=lensOpening(target);
+  var optActual=ooL.reduce(function(a,b){return a+b;},0);
+  document.getElementById('optActualQty').textContent='Actual opening order: '+optActual+' units — '
+    +ooL.map(function(v,i){return lenses[i].label+' ('+lenses[i].sku+'): '+v;}).join('  ·  ');
+
+  var op=calcAccPlan(ooL);
+  var opR=op.orders.reduce(function(a,b){return a+b;},0);
+  var opG=optActual+opR, opEv=op.orders.filter(function(v){return v>0;}).length;
+  buildStats(document.getElementById('opticsStats'),[
+    {label:'Opening order', value:optActual.toLocaleString(), sub:'placed Aug 2026'},
+    {label:'Total reorders',value:opR.toLocaleString(),       sub:opEv+' order events'},
+    {label:'Grand total',   value:opG.toLocaleString(),       sub:'units ordered'},
+    {label:'End inventory', value:op.endInv[11].toLocaleString(), sub:'Aug 2027'},
+    {label:'MOQ',           value:'100',                      sub:'per angle'},
+    {label:'Safety stock',  value:'24',                       sub:'per angle'},
+  ]);
+  buildScheduleTable('opticsScheduleTable',optActual,op,null,L_SAFETY*4);
+
+  var ot=document.getElementById('opticsVarTable');
+  var oh='<thead><tr><th>Month</th><th>Year</th><th>Order total</th>';
+  lenses.forEach(function(l){oh+='<th><span class="swatch" style="background:'+l.color+';margin-right:3px"></span>'+l.label+'<br><span class="sku-chip" style="font-size:8px">'+l.sku+'</span></th>';});
+  oh+='</tr></thead><tbody>';
+  var lTotals=ooL.slice();
+  oh+='<tr style="background:var(--y26-bg)"><td><strong>Aug</strong></td><td>2026</td><td style="font-weight:600;color:'+blueT+'">'+optActual+'<span class="order-badge badge-opening">OPENING</span></td>';
+  ooL.forEach(function(v){oh+='<td>'+v+'</td>';}); oh+='</tr>';
+  months.forEach(function(m,i){
+    if(op.orders[i]===0) return;
+    var is26=years[i]==='2026',rowBg=is26?'var(--y26-bg)':'var(--y27-bg)';
+    op.ordersV[i].forEach(function(v,li){lTotals[li]+=v;});
+    oh+='<tr style="background:'+rowBg+'"><td>'+m+'</td><td>'+years[i]+'</td><td style="font-weight:600;color:'+greenT+'">'+op.orders[i]+'<span class="order-badge badge-reorder">REORDER</span></td>';
+    op.ordersV[i].forEach(function(v){oh+='<td>'+v+'</td>';}); oh+='</tr>';
+  });
+  oh+='<tr class="total-row"><td></td><td>Total</td><td>'+opG+'</td>';
+  lTotals.forEach(function(v){oh+='<td>'+v+'</td>';}); oh+='</tr></tbody>';
+  ot.innerHTML=oh;
+
+  var nd=calcNodesPlan();
+  var ndR=nd.orders.reduce(function(a,b){return a+b;},0);
+  var ndG=144+ndR, ndEv=nd.orders.filter(function(v){return v>0;}).length;
+  buildStats(document.getElementById('nodesStats'),[
+    {label:'Opening order', value:'144',               sub:'placed Aug 2026 (3 MOQ)'},
+    {label:'Sep usage',     value:'88',                sub:'demo-driven (est. 75–100)'},
+    {label:'Oct–Aug usage', value:'88',                sub:'seasonal baseline'},
+    {label:'Total reorders',value:ndR.toLocaleString(),sub:ndEv+' order events'},
+    {label:'Grand total',   value:ndG.toLocaleString(),sub:'units ordered'},
+    {label:'End inventory', value:nd.endInv[11].toLocaleString(), sub:'Aug 2027'},
+    {label:'MOQ',           value:'48',                sub:'units'},
+    {label:'Safety stock',  value:'12',                sub:'min units'},
+  ]);
+  buildScheduleTable('nodesScheduleTable',144,nd,nodeSales,N_SAFETY);
+}
+
+// Tab 3 forecast cards + chart
+(function(){
+  var g=document.getElementById('forecastCards');
+  variants.forEach(function(v,vi){
+    var pct=((annualV[vi]/2000)*100).toFixed(1);
+    g.innerHTML+='<div style="background:var(--surface2);border-left:3px solid '+v.color+';border-radius:0 8px 8px 0;padding:12px 14px">'
+      +'<div style="font-size:10px;font-family:monospace;color:'+(v.tbd?'var(--amber)':'var(--text3)')+';margin-bottom:2px">'+v.sku+'</div>'
+      +'<div style="font-size:12px;color:var(--text2);margin-bottom:6px">'+v.label+'</div>'
+      +'<div style="font-size:20px;font-weight:600">'+annualV[vi]+'</div>'
+      +'<div style="font-size:11px;color:var(--text3)">'+pct+'% of forecast</div></div>';
+  });
+  var fl=document.getElementById('forecastLegend');
+  variants.forEach(function(v){
+    fl.innerHTML+='<span><span class="swatch" style="background:'+v.color+'"></span>'+v.label+'</span>';
+  });
+  new Chart(document.getElementById('forecastStackedChart'),{
+    type:'bar',
+    data:{labels:months,datasets:variants.map(function(v,vi){return{label:v.label,data:monthly.map(function(m){return m[vi];}),backgroundColor:v.color,borderWidth:0,stack:'s'};})},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:function(i){return months[i[0].dataIndex]+' '+years[i[0].dataIndex];},label:function(c){return ' '+c.dataset.label+': '+c.parsed.y;}}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{color:tickC,autoSkip:false,maxRotation:0}},y:{stacked:true,grid:{color:gridC},ticks:{color:tickC},max:450}}}
+  });
+  var t=document.getElementById('forecastTable');
+  var h='<thead><tr><th>Month</th><th>Year</th>';
+  variants.forEach(function(v){h+='<th><span class="swatch" style="background:'+v.color+';margin-right:3px"></span>'+v.short+'<br><span class="sku-chip'+(v.tbd?' sku-tbd':'')+'" style="font-size:8px">'+v.sku+'</span></th>';});
+  h+='<th>Total</th></tr></thead><tbody>';
+  months.forEach(function(m,i){
+    h+='<tr class="'+(years[i]==='2026'?'y26':'y27')+'"><td>'+m+'</td><td>'+years[i]+'</td>';
+    monthly[i].forEach(function(v){h+='<td>'+v+'</td>';});
+    h+='<td style="font-weight:500">'+sales[i]+'</td></tr>';
+  });
+  h+='<tr class="total-row"><td>Annual</td><td>—</td>';
+  annualV.forEach(function(v){h+='<td>'+v+'</td>';}); h+='<td>2,000</td></tr></tbody>';
+  t.innerHTML=h;
+})();
+
+renderModules(756);
+renderAccessories(600);
+
+var debM,debA;
+document.getElementById('modQty').addEventListener('input',function(){
+  clearTimeout(debM); var val=parseInt(this.value,10);
+  debM=setTimeout(function(){if(val&&val>0) renderModules(val);},350);
+});
+document.getElementById('optQty').addEventListener('input',function(){
+  clearTimeout(debA); var val=parseInt(this.value,10);
+  debA=setTimeout(function(){if(val&&val>0) renderAccessories(val);},350);
+});
+
+function switchTab(name,btn){
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('visible');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('sec-'+name).classList.add('visible');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
