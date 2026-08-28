@@ -189,7 +189,7 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
       <p style="font-size:12px;color:var(--text2);margin-bottom:8px">Fixed bill of materials per kit: 1× Directional Uplight (Ketra 10W, 40°) &middot; 1× Fixed Uplight (Ketra 5W, 25°) &middot; 1× Modern Path Light (Ketra 5W, 60°) &middot; 1× Path Light (Ketra 5W, 60°) &middot; 1× VIANode.</p>
       <div class="stat-grid" id="kitStats"></div>
       <div class="card-title">Standalone fixture mix (dealer orders, ex. Demo Kits)</div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:8px">Sep/Oct use the actual preorder mix observed so far. Nov–Aug use a mix derived from rep firm popularity scoring (Directional Uplight #1, Path Light #2, Fixed Uplight #3, Modern Path Light #4) &mdash; adjustable as real dealer order data comes in.</p>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:8px">Sep/Oct use the actual preorder mix observed so far. Nov–Aug use a blended mix &mdash; 70% weighted to historical MR16 lighting sales (Directional 50% &middot; Path Lights combined 37% &middot; Fixed 10% &middot; Tiki 3%), 30% to rep firm popularity scoring, with the Path/Modern Path split apportioned by the reps' relative ranking &mdash; adjustable as real VIA dealer order data comes in.</p>
       <div class="legend" id="fixtureLegend"></div>
       <div class="chart-wrap" style="height:260px;margin-bottom:24px"><canvas id="fixtureStackChart"></canvas></div>
       <div class="card-title">Monthly fixture forecast by type</div>
@@ -260,14 +260,15 @@ var lenses = [
   {label:'40°', sku:'UN-D2OPHO40', color:'#185FA5', pct:0.40},
   {label:'60°', sku:'UN-D2OPHO60', color:'#B5D4F4', pct:0.20},
 ];
-// Standalone (non-kit) fixture mix, derived from rep survey popularity scores:
-// Directional 50pts, Path 34.5pts, Fixed 30pts, Modern Path 29pts, Tiki nominal (new/untested)
+// Standalone (non-kit) fixture mix: blended 70% MR16 lighting sales history / 30% rep survey popularity scores.
+// MR16 basis: Directional 50%, Path Lights combined 37% (split Path/Modern Path by survey ratio 34.5:29), Fixed 10%, Tiki 3%.
+// Survey basis: Directional 34.5%, Path 23.8%, Fixed 20.7%, Modern Path 20.0%, Tiki 1.0%.
 var FIXTURES = [
-  {key:'DUL',  name:'Directional Uplight', sku:'VIADLH-ASSY', housing:'VIADLH', color:'#185FA5', pct:0.345, tbd:false},
-  {key:'PL',   name:'Path Light',          sku:'VIAPLH-ASSY', housing:'VIAPLH', color:'#854F0B', pct:0.238, tbd:false},
-  {key:'FUL',  name:'Fixed Uplight',       sku:'VIAFLH-ASSY', housing:'VIAFLH', color:'#5DCAA5', pct:0.207, tbd:false},
-  {key:'MPL',  name:'Modern Path Light',   sku:'VIADLH-ASSY', housing:'VIADLH', color:'#7F77DD', pct:0.200, tbd:false},
-  {key:'TIKI', name:'VIA Tiki Torch',      sku:'VIAPLH-ASSY', housing:'VIAPLH', color:'#B5D4F4', pct:0.010, tbd:true},
+  {key:'DUL',  name:'Directional Uplight', sku:'VIADLH-ASSY', housing:'VIADLH', color:'#185FA5', pct:0.4535, tbd:false},
+  {key:'PL',   name:'Path Light',          sku:'VIAPLH-ASSY', housing:'VIAPLH', color:'#854F0B', pct:0.2121, tbd:false},
+  {key:'FUL',  name:'Fixed Uplight',       sku:'VIAFLH-ASSY', housing:'VIAFLH', color:'#5DCAA5', pct:0.1321, tbd:false},
+  {key:'MPL',  name:'Modern Path Light',   sku:'VIADLH-ASSY', housing:'VIADLH', color:'#7F77DD', pct:0.1783, tbd:false},
+  {key:'TIKI', name:'VIA Tiki Torch',      sku:'VIAPLH-ASSY', housing:'VIAPLH', color:'#B5D4F4', pct:0.0240, tbd:true},
 ];
 var HOUSINGS = [
   {sku:'VIADLH', name:'Directional Light Housing', opening:600},
