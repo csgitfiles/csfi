@@ -99,14 +99,44 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
       <p style="font-size:12px;color:var(--text2);margin-bottom:16px">Preorders opened Sep 18, 2026 &middot; shipping begins Oct 15, 2026 (preorder window closes, VIA becomes a normal stocked product). Enter actuals as they come in &mdash; every tab in this tool reforecasts automatically to hold the 2,000-unit annual total.</p>
       <div class="actual-grid">
         <div class="actual-field"><label>VIA Demo Kits sold</label><input id="a_demoKits" type="number" min="0" step="1" value="7"></div>
-        <div class="actual-field"><label>Directional Uplights &mdash; 10W Flood modules</label><input id="a_dulFlood" type="number" min="0" step="1" value="46"></div>
-        <div class="actual-field"><label>Directional Uplights &mdash; 10W Spot modules</label><input id="a_dulSpot" type="number" min="0" step="1" value="30"></div>
-        <div class="actual-field"><label>Fixed Uplights sold (standalone)</label><input id="a_ful" type="number" min="0" step="1" value="0"></div>
-        <div class="actual-field"><label>Path Lights sold (standalone)</label><input id="a_pl" type="number" min="0" step="1" value="0"></div>
-        <div class="actual-field"><label>Modern Path Lights sold (standalone)</label><input id="a_mpl" type="number" min="0" step="1" value="0"></div>
-        <div class="actual-field"><label>VIA Tiki Torches sold (standalone)</label><input id="a_tiki" type="number" min="0" step="1" value="0"></div>
         <div class="actual-field"><label>VIANODEs preordered (total)</label><input id="a_nodes" type="number" min="0" step="1" value="9"></div>
         <div class="actual-field"><label>Days elapsed in preorder window (of 28)</label><input id="a_days" type="number" min="1" max="28" step="1" value="10"></div>
+      </div>
+
+      <div class="card-title" style="margin-top:8px">Import dealer order SKUs</div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Paste configurator SKU strings from dealer orders, one per line (e.g. <code>VIADL-VB-AN-K-10-40-XX-03-SS</code>). Add <code>x3</code> after a line to count multiple units. A bare <code>VIANODE</code> line counts a standalone node. Importing <strong>adds</strong> to the standalone totals below &mdash; it doesn't replace them, so you can import in batches as orders come in.</p>
+      <textarea id="skuImportBox" placeholder="VIADL-VB-AN-K-10-40-XX-03-SS x3&#10;VIAPL-VB-PH-K-5-60-XX-18-SS&#10;VIANODE" style="width:100%;min-height:90px;font-family:monospace;font-size:12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:10px;color:var(--text);outline:none;resize:vertical;margin-bottom:8px"></textarea>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <button class="dl-btn" style="background:var(--blue)" onclick="importSkuOrders()">Parse &amp; add to actuals</button>
+        <span id="skuImportResult" style="font-size:12px;color:var(--text2)"></span>
+      </div>
+
+      <div class="card-title">Standalone fixture units (aggregated, ex. Demo Kits)</div>
+      <div class="actual-grid">
+        <div class="actual-field"><label>Directional Uplight units</label><input id="a_dul" type="number" min="0" step="1" value="76"></div>
+        <div class="actual-field"><label>Fixed Uplight units</label><input id="a_ful" type="number" min="0" step="1" value="0"></div>
+        <div class="actual-field"><label>Path Light units</label><input id="a_pl" type="number" min="0" step="1" value="0"></div>
+        <div class="actual-field"><label>Modern Path Light units</label><input id="a_mpl" type="number" min="0" step="1" value="0"></div>
+        <div class="actual-field"><label>Tiki Torch units</label><input id="a_tiki" type="number" min="0" step="1" value="0"></div>
+      </div>
+
+      <div class="card-title">Standalone module mix (aggregated across all fixture types)</div>
+      <div class="actual-grid">
+        <div class="actual-field"><label>Ketra 10W Flood</label><input id="a_k10f" type="number" min="0" step="1" value="46"></div>
+        <div class="actual-field"><label>Ketra 10W Spot</label><input id="a_k10s" type="number" min="0" step="1" value="30"></div>
+        <div class="actual-field"><label>Ketra 5W Flood</label><input id="a_k5f" type="number" min="0" step="1" value="0"></div>
+        <div class="actual-field"><label>Ketra 5W Spot</label><input id="a_k5s" type="number" min="0" step="1" value="0"></div>
+        <div class="actual-field"><label>Rania 10W</label><input id="a_r10" type="number" min="0" step="1" value="0"></div>
+        <div class="actual-field"><label>Rania 5W</label><input id="a_r5" type="number" min="0" step="1" value="0"></div>
+      </div>
+
+      <div class="card-title">Standalone optics mix (aggregated across all fixture types)</div>
+      <div class="assumption-note" style="margin-top:-4px">15° count is pinned to the 30 Ketra 10W Spot modules (15° requires the Spot module). The 46 Flood-module units' exact 25/40/60 split wasn't captured before the SKU importer existed, so they default to 40° &mdash; correct this once real per-order optics data is available.</div>
+      <div class="actual-grid">
+        <div class="actual-field"><label>15°</label><input id="a_o15" type="number" min="0" step="1" value="30"></div>
+        <div class="actual-field"><label>25°</label><input id="a_o25" type="number" min="0" step="1" value="0"></div>
+        <div class="actual-field"><label>40°</label><input id="a_o40" type="number" min="0" step="1" value="46"></div>
+        <div class="actual-field"><label>60°</label><input id="a_o60" type="number" min="0" step="1" value="0"></div>
       </div>
       <div class="assumption-note" style="margin-bottom:16px">Run-rate is extrapolated from actuals ÷ days elapsed to project the full Sep 18–Oct 15 window, then split pro-rata across Sep (13 days) and Oct (15 days). Nov–Aug are rescaled proportionally to their original shape so the annual module total holds at 2,000.</div>
       <div id="reforecastStats" class="stat-grid"></div>
@@ -264,11 +294,11 @@ var lenses = [
 // MR16 basis: Directional 50%, Path Lights combined 37% (split Path/Modern Path by survey ratio 34.5:29), Fixed 10%, Tiki 3%.
 // Survey basis: Directional 34.5%, Path 23.8%, Fixed 20.7%, Modern Path 20.0%, Tiki 1.0%.
 var FIXTURES = [
-  {key:'DUL',  name:'Directional Uplight', sku:'VIADLH-ASSY', housing:'VIADLH', color:'#185FA5', pct:0.4535, tbd:false},
-  {key:'PL',   name:'Path Light',          sku:'VIAPLH-ASSY', housing:'VIAPLH', color:'#854F0B', pct:0.2121, tbd:false},
-  {key:'FUL',  name:'Fixed Uplight',       sku:'VIAFLH-ASSY', housing:'VIAFLH', color:'#5DCAA5', pct:0.1321, tbd:false},
-  {key:'MPL',  name:'Modern Path Light',   sku:'VIADLH-ASSY', housing:'VIADLH', color:'#7F77DD', pct:0.1783, tbd:false},
-  {key:'TIKI', name:'VIA Tiki Torch',      sku:'VIAPLH-ASSY', housing:'VIAPLH', color:'#B5D4F4', pct:0.0240, tbd:true},
+  {key:'DUL',  name:'Directional Uplight', sku:'VIADL',  housing:'VIADLH', color:'#185FA5', pct:0.4535, tbd:false},
+  {key:'PL',   name:'Path Light',          sku:'VIAPL',  housing:'VIAPLH', color:'#854F0B', pct:0.2121, tbd:false},
+  {key:'FUL',  name:'Fixed Uplight',       sku:'VIAFL',  housing:'VIAFLH', color:'#5DCAA5', pct:0.1321, tbd:false},
+  {key:'MPL',  name:'Modern Path Light',   sku:'VIAMPL', housing:'VIADLH', color:'#7F77DD', pct:0.1783, tbd:false},
+  {key:'TIKI', name:'VIA Tiki Torch',      sku:'VIATK',  housing:'VIAPLH', color:'#B5D4F4', pct:0.0240, tbd:true},
 ];
 var HOUSINGS = [
   {sku:'VIADLH', name:'Directional Light Housing', opening:600},
@@ -307,23 +337,108 @@ function distribute(total, pcts) {
 }
 function cmoq(val,moq){return Math.ceil(Math.max(val,0)/moq)*moq;}
 
+// ============ SKU parser (dealer configurator strings) ============
+// Fixture code -> {type key (matches FIXTURES array), field positions after split('-')}
+var SKU_TEMPLATES = {
+  'VIADL':  {type:'DUL',  moduleIdx:3, powerIdx:4, opticsIdx:5},
+  'VIAFL':  {type:'FUL',  moduleIdx:3, powerIdx:4, opticsIdx:5},
+  'VIAMPL': {type:'MPL',  moduleIdx:3, powerIdx:4, opticsIdx:5},
+  'VIAPL':  {type:'PL',   moduleIdx:3, powerIdx:4, opticsIdx:5},
+  'VIATK':  {type:'TIKI', moduleIdx:2, powerIdx:3, opticsIdx:4}
+};
+// Ketra Flood/Spot is determined by optics angle: 15° requires Spot, 25/40/60° use Flood.
+function variantFromModulePowerOptics(moduleLetter, power, optics){
+  if(moduleLetter==='K'){
+    var isSpot = (optics==='15');
+    if(power==='10') return isSpot?1:0; // index into variants[]: 0=K10Flood,1=K10Spot
+    if(power==='5')  return isSpot?3:2; // 2=K5Flood,3=K5Spot
+  }
+  if(moduleLetter==='R'){
+    return power==='10'?4:5; // 4=R10W,5=R5W
+  }
+  return null;
+}
+function parseSkuLine(line){
+  line = line.trim();
+  if(!line) return null;
+  var m = line.match(/^(.*?)(?:\s+x\s*(\d+)|\s*[x*]\s*(\d+))?$/i);
+  var body = (m?m[1]:line).trim();
+  var qty = m && (m[2]||m[3]) ? parseInt(m[2]||m[3],10) : 1;
+  if(!body) return null;
+  if(/^VIANODE$/i.test(body)) return {kind:'node', qty:qty};
+  var parts = body.toUpperCase().split('-');
+  var fixCode = parts[0];
+  var tmpl = SKU_TEMPLATES[fixCode];
+  if(!tmpl) return {kind:'unrecognized', raw:line};
+  var moduleLetter = parts[tmpl.moduleIdx];
+  var power = parts[tmpl.powerIdx];
+  var optics = parts[tmpl.opticsIdx];
+  var variantIdx = variantFromModulePowerOptics(moduleLetter, power, optics);
+  if(variantIdx===null || !optics) return {kind:'unrecognized', raw:line};
+  return {kind:'fixture', qty:qty, fixtureType:tmpl.type, variantIdx:variantIdx, optics:optics};
+}
+function importSkuOrders(){
+  var box = document.getElementById('skuImportBox');
+  var lines = box.value.split('\n');
+  var added = {DUL:0,FUL:0,MPL:0,PL:0,TIKI:0};
+  var addedVariant = [0,0,0,0,0,0];
+  var addedOptics = {15:0,25:0,40:0,60:0};
+  var addedNodes = 0, unrecognized = [];
+  lines.forEach(function(line){
+    var r = parseSkuLine(line);
+    if(!r) return;
+    if(r.kind==='node') addedNodes += r.qty;
+    else if(r.kind==='fixture'){
+      added[r.fixtureType] += r.qty;
+      addedVariant[r.variantIdx] += r.qty;
+      addedOptics[r.optics] += r.qty;
+    } else if(r.kind==='unrecognized') unrecognized.push(r.raw);
+  });
+  function bump(id, delta){ var el=document.getElementById(id); el.value = (parseInt(el.value,10)||0) + delta; }
+  bump('a_dul', added.DUL); bump('a_ful', added.FUL); bump('a_mpl', added.MPL); bump('a_pl', added.PL); bump('a_tiki', added.TIKI);
+  bump('a_k10f', addedVariant[0]); bump('a_k10s', addedVariant[1]); bump('a_k5f', addedVariant[2]); bump('a_k5s', addedVariant[3]); bump('a_r10', addedVariant[4]); bump('a_r5', addedVariant[5]);
+  bump('a_o15', addedOptics[15]); bump('a_o25', addedOptics[25]); bump('a_o40', addedOptics[40]); bump('a_o60', addedOptics[60]);
+  bump('a_nodes', addedNodes);
+  var totalParsed = added.DUL+added.FUL+added.MPL+added.PL+added.TIKI+addedNodes;
+  var msg = 'Added '+totalParsed+' unit'+(totalParsed===1?'':'s') + (addedNodes?' (incl. '+addedNodes+' standalone VIANODE)':'') + '.';
+  if(unrecognized.length) msg += ' '+unrecognized.length+' line(s) not recognized: '+unrecognized.slice(0,3).join(' | ');
+  document.getElementById('skuImportResult').textContent = msg;
+  box.value = '';
+  recomputeAll();
+}
+
 // ============ REFORECAST ENGINE ============
 function readActuals(){
   return {
     demoKits: parseInt(document.getElementById('a_demoKits').value,10)||0,
-    dulFloodModules: parseInt(document.getElementById('a_dulFlood').value,10)||0,
-    dulSpotModules: parseInt(document.getElementById('a_dulSpot').value,10)||0,
-    fulUnits: parseInt(document.getElementById('a_ful').value,10)||0,
-    plUnits: parseInt(document.getElementById('a_pl').value,10)||0,
-    mplUnits: parseInt(document.getElementById('a_mpl').value,10)||0,
-    tikiUnits: parseInt(document.getElementById('a_tiki').value,10)||0,
     nodesTotal: parseInt(document.getElementById('a_nodes').value,10)||0,
-    daysElapsed: Math.max(1, parseInt(document.getElementById('a_days').value,10)||1)
+    daysElapsed: Math.max(1, parseInt(document.getElementById('a_days').value,10)||1),
+    fixtureUnits: {
+      DUL: parseInt(document.getElementById('a_dul').value,10)||0,
+      FUL: parseInt(document.getElementById('a_ful').value,10)||0,
+      PL:  parseInt(document.getElementById('a_pl').value,10)||0,
+      MPL: parseInt(document.getElementById('a_mpl').value,10)||0,
+      TIKI:parseInt(document.getElementById('a_tiki').value,10)||0
+    },
+    variantCounts: [
+      parseInt(document.getElementById('a_k10f').value,10)||0,
+      parseInt(document.getElementById('a_k10s').value,10)||0,
+      parseInt(document.getElementById('a_k5f').value,10)||0,
+      parseInt(document.getElementById('a_k5s').value,10)||0,
+      parseInt(document.getElementById('a_r10').value,10)||0,
+      parseInt(document.getElementById('a_r5').value,10)||0
+    ],
+    opticsCounts: {
+      15: parseInt(document.getElementById('a_o15').value,10)||0,
+      25: parseInt(document.getElementById('a_o25').value,10)||0,
+      40: parseInt(document.getElementById('a_o40').value,10)||0,
+      60: parseInt(document.getElementById('a_o60').value,10)||0
+    }
   };
 }
 
 function computeReforecast(act){
-  var standaloneActualUnits = act.dulFloodModules+act.dulSpotModules+act.fulUnits+act.plUnits+act.mplUnits+act.tikiUnits;
+  var standaloneActualUnits = act.fixtureUnits.DUL+act.fixtureUnits.FUL+act.fixtureUnits.PL+act.fixtureUnits.MPL+act.fixtureUnits.TIKI;
   var actualModulesToDate = act.demoKits*4 + standaloneActualUnits;
   var elapsed = act.daysElapsed;
 
@@ -349,15 +464,21 @@ function computeReforecast(act){
   var newSales = [modSep, modOct].concat(newRemaining);
   var newKits = [kitSep, kitOct].concat(new Array(10).fill(0));
 
+  // Module variant split for Sep+Oct: kit-driven (fixed BOM) + actual standalone variant counts + extrapolated remainder by mix%
+  var kitVariantContribution = [act.demoKits*1, 0, act.demoKits*3, 0, 0, 0]; // 1x K10Flood + 3x K5Flood per kit
+  var actualVariantCounts = act.variantCounts.map(function(v,i){return v+kitVariantContribution[i];});
   var extraModulesSepOct = Math.max(0, usedSoFar - actualModulesToDate);
   var extraSplit = distribute(extraModulesSepOct, vPcts);
-  var actualVariantCounts = [
-    act.demoKits*1 + act.dulFloodModules,
-    act.dulSpotModules,
-    act.demoKits*3,
-    0,0,0
-  ];
   var sepOctVariantTotal = actualVariantCounts.map(function(v,i){return v+extraSplit[i];});
+
+  // Optics split for Sep+Oct: kit-driven (fixed 25:1,40:1,60:2 per kit) + actual standalone optics counts + extrapolated remainder by lens mix%
+  var kitOpticsContribution = [0, act.demoKits*1, act.demoKits*1, act.demoKits*2]; // 15,25,40,60
+  var actualOpticsCounts = [act.opticsCounts[15], act.opticsCounts[25], act.opticsCounts[40], act.opticsCounts[60]];
+  var actualOpticsTotal = actualOpticsCounts.map(function(v,i){return v+kitOpticsContribution[i];});
+  var extraOpticsSepOct = Math.max(0, usedSoFar - actualModulesToDate);
+  var extraOpticsSplit = distribute(extraOpticsSepOct, lPcts);
+  var sepOctOpticsTotal = actualOpticsTotal.map(function(v,i){return v+extraOpticsSplit[i];});
+
 
   // Nodes
   var origStandaloneNodes = ORIGINAL_NODE_SALES.map(function(v,i){return v-ORIGINAL_KIT_EST[i];});
@@ -381,11 +502,11 @@ function computeReforecast(act){
     var total = standaloneActualUnits;
     if(total===0) return FIXTURES.map(function(f){return f.pct;});
     return [
-      (act.dulFloodModules+act.dulSpotModules)/total,
-      act.plUnits/total,
-      act.fulUnits/total,
-      act.mplUnits/total,
-      act.tikiUnits/total
+      act.fixtureUnits.DUL/total,
+      act.fixtureUnits.PL/total,
+      act.fixtureUnits.FUL/total,
+      act.fixtureUnits.MPL/total,
+      act.fixtureUnits.TIKI/total
     ];
   }
   var standaloneTotalByMonth = [standSep, standOct].concat(newSales.slice(2));
@@ -396,7 +517,7 @@ function computeReforecast(act){
 
   return {
     newSales:newSales, newKits:newKits, kitSep:kitSep, kitOct:kitOct, standSep:standSep, standOct:standOct,
-    sepOctVariantTotal:sepOctVariantTotal, actualModulesToDate:actualModulesToDate,
+    sepOctVariantTotal:sepOctVariantTotal, sepOctOpticsTotal:sepOctOpticsTotal, actualModulesToDate:actualModulesToDate,
     projKits:projKits, projStandalone:projStandalone,
     totalNodesByMonth:totalNodesByMonth, newStandaloneNodes:newStandaloneNodes,
     actualKitNodes:actualKitNodes, actualStandaloneNodes:actualStandaloneNodes,
@@ -415,12 +536,11 @@ function getMonthlyV(i, R){
 }
 function getMonthlyL(i, R){
   if(i===0 || i===1){
-    // Demo kit optics are fixed per kit (25°:1, 40°:1, 60°:2); standalone uses lens mix%
-    var kits = i===0?R.kitSep:R.kitOct;
-    var stand = i===0?R.standSep:R.standOct;
-    var kitL = [0, kits, kits, kits*2]; // 15,25,40,60
-    var standL = distribute(stand, lPcts);
-    return kitL.map(function(v,li){return v+standL[li];});
+    // Sep/Oct: apportion the reforecasted Sep+Oct optics total (real actuals + kit BOM + extrapolated remainder)
+    // by this month's share of mod_sep/mod_oct, same method used for module variants.
+    var monthShare = i===0 ? R.newSales[0] : R.newSales[1];
+    var twoMoTotal = R.newSales[0]+R.newSales[1];
+    return distribute(monthShare, R.sepOctOpticsTotal.map(function(v){return twoMoTotal?v/twoMoTotal:0;}));
   }
   return distribute(R.newSales[i], lPcts);
 }
@@ -876,10 +996,16 @@ function downloadWorkbook(){
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(houRows), 'Housings');
 
   var actRows=[['Field','Value'],
-    ['Demo Kits sold',STATE.act.demoKits],['Directional Uplight - 10W Flood',STATE.act.dulFloodModules],
-    ['Directional Uplight - 10W Spot',STATE.act.dulSpotModules],['Fixed Uplights sold',STATE.act.fulUnits],
-    ['Path Lights sold',STATE.act.plUnits],['Modern Path Lights sold',STATE.act.mplUnits],
-    ['Tiki Torches sold',STATE.act.tikiUnits],['VIANODEs preordered',STATE.act.nodesTotal],
+    ['Demo Kits sold',STATE.act.demoKits],
+    ['Directional Uplight units',STATE.act.fixtureUnits.DUL],['Fixed Uplight units',STATE.act.fixtureUnits.FUL],
+    ['Path Light units',STATE.act.fixtureUnits.PL],['Modern Path Light units',STATE.act.fixtureUnits.MPL],
+    ['Tiki Torch units',STATE.act.fixtureUnits.TIKI],
+    ['Ketra 10W Flood modules',STATE.act.variantCounts[0]],['Ketra 10W Spot modules',STATE.act.variantCounts[1]],
+    ['Ketra 5W Flood modules',STATE.act.variantCounts[2]],['Ketra 5W Spot modules',STATE.act.variantCounts[3]],
+    ['Rania 10W modules',STATE.act.variantCounts[4]],['Rania 5W modules',STATE.act.variantCounts[5]],
+    ['15° optics',STATE.act.opticsCounts[15]],['25° optics',STATE.act.opticsCounts[25]],
+    ['40° optics',STATE.act.opticsCounts[40]],['60° optics',STATE.act.opticsCounts[60]],
+    ['VIANODEs preordered',STATE.act.nodesTotal],
     ['Days elapsed in window',STATE.act.daysElapsed],['Generated',new Date().toISOString()]];
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(actRows), 'Actuals');
 
@@ -905,7 +1031,8 @@ document.getElementById('optQty').addEventListener('input',function(){
   clearTimeout(debA); var val=parseInt(this.value,10);
   debA=setTimeout(function(){if(val&&val>0) renderAccessories(val);},350);
 });
-['a_demoKits','a_dulFlood','a_dulSpot','a_ful','a_pl','a_mpl','a_tiki','a_nodes','a_days'].forEach(function(id){
+['a_demoKits','a_nodes','a_days','a_dul','a_ful','a_pl','a_mpl','a_tiki',
+ 'a_k10f','a_k10s','a_k5f','a_k5s','a_r10','a_r5','a_o15','a_o25','a_o40','a_o60'].forEach(function(id){
   document.getElementById(id).addEventListener('input',function(){
     clearTimeout(debAct);
     debAct=setTimeout(recomputeAll,350);
