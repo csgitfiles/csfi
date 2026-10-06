@@ -28,6 +28,11 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .dl-btn{background:var(--navy);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;white-space:nowrap;transition:opacity .15s}
 .dl-btn:hover{opacity:.88}
 .dl-btn:disabled{opacity:.5;cursor:default}
+.header-actions{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.header-actions .btn-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+#syncStatus{font-size:11px;color:var(--text2);max-width:360px;text-align:right}
+#syncStatus.ok{color:#0F6E56}#syncStatus.err{color:#A32D2D}
+@media(max-width:600px){.header-actions{align-items:flex-start}#syncStatus{text-align:left}}
 .tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
 .tab-btn{background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:7px 16px;font-size:13px;font-family:inherit;color:var(--text2);cursor:pointer;transition:all .15s}
 .tab-btn:hover{background:var(--surface2);color:var(--text)}
@@ -80,87 +85,31 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
       <h1>CS VIA LED Launch Forecast</h1>
       <div class="sub">2,000-unit annual module forecast &middot; Sales Sep 2026 – Aug 2027 &middot; Living forecast &mdash; updates as preorder actuals come in</div>
     </div>
-    <button class="dl-btn" onclick="downloadWorkbook()">Download .xlsx</button>
+    <div class="header-actions">
+      <div class="btn-row">
+        <button class="dl-btn" id="syncBtn" style="background:var(--blue)" onclick="syncLatestActuals()">&#8635; Get latest actuals</button>
+        <button class="dl-btn" onclick="downloadWorkbook()">Download .xlsx</button>
+      </div>
+      <div id="syncStatus">Forecast uses actuals through Oct 6, 2026 (11 kits, 115 standalone fixtures, 22 nodes). Actuals are maintained in the VIA Forecast Tracker; click to pull the latest.</div>
+    </div>
   </div>
 
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('actuals',this)">Actuals &amp; reforecast</button>
-    <button class="tab-btn" onclick="switchTab('modules',this)">Module ordering plan</button>
+    <button class="tab-btn active" onclick="switchTab('modules',this)">Module ordering plan</button>
     <button class="tab-btn" onclick="switchTab('accessories',this)">Accessory ordering plan</button>
     <button class="tab-btn" onclick="switchTab('fixtures',this)">Fixture forecast</button>
     <button class="tab-btn" onclick="switchTab('housings',this)">Housing ordering plan</button>
     <button class="tab-btn" onclick="switchTab('forecast',this)">Sales forecast</button>
   </div>
 
-  <!-- TAB 0: Actuals & Reforecast -->
-  <div id="sec-actuals" class="section visible">
-    <div class="card">
-      <div style="font-size:18px;font-weight:600;margin-bottom:4px">Preorder Actuals</div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:16px">First VIA orders posted Aug 18, 2026 &middot; shipping begins Oct 15, 2026 (preorder window closes, VIA becomes a normal stocked product). Aug orders are folded into Sep, the first month of the forecast period. <strong>Current actuals:</strong> SAP sales/production orders from Kye Riddell's VIA Production Summary, pulled Oct 6, 2026 (postings Aug 18 &ndash; Oct 1). Enter actuals as they come in &mdash; every tab in this tool reforecasts automatically to hold the 2,000-unit annual total.</p>
-      <div class="actual-grid">
-        <div class="actual-field"><label>VIA Demo Kits sold</label><input id="a_demoKits" type="number" min="0" step="1" value="11"></div>
-        <div class="actual-field"><label>VIANODEs preordered (total, incl. kit nodes)</label><input id="a_nodes" type="number" min="0" step="1" value="22"></div>
-        <div class="actual-field"><label>Days elapsed in preorder window (of 59)</label><input id="a_days" type="number" min="1" max="59" step="1" value="49"></div>
-      </div>
-
-      <div class="card-title" style="margin-top:8px">Import dealer order SKUs</div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Paste configurator SKU strings from dealer orders, one per line (e.g. <code>VIADL-VB-AN-K-10-40-XX-03-SS</code>). Add <code>x3</code> after a line to count multiple units. A bare <code>VIANODE</code> line counts a standalone node. Importing <strong>adds</strong> to the standalone totals below &mdash; it doesn't replace them, so you can import in batches as orders come in.</p>
-      <textarea id="skuImportBox" placeholder="VIADL-VB-AN-K-10-40-XX-03-SS x3&#10;VIAPL-VB-PH-K-5-60-XX-18-SS&#10;VIANODE" style="width:100%;min-height:90px;font-family:monospace;font-size:12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:10px;color:var(--text);outline:none;resize:vertical;margin-bottom:8px"></textarea>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-        <button class="dl-btn" style="background:var(--blue)" onclick="importSkuOrders()">Parse &amp; add to actuals</button>
-        <span id="skuImportResult" style="font-size:12px;color:var(--text2)"></span>
-      </div>
-
-      <div class="card-title">Standalone fixture units (aggregated, ex. Demo Kits)</div>
-      <div class="actual-grid">
-        <div class="actual-field"><label>Directional Uplight units</label><input id="a_dul" type="number" min="0" step="1" value="95"></div>
-        <div class="actual-field"><label>Fixed Uplight units</label><input id="a_ful" type="number" min="0" step="1" value="16"></div>
-        <div class="actual-field"><label>Path Light units</label><input id="a_pl" type="number" min="0" step="1" value="0"></div>
-        <div class="actual-field"><label>Modern Path Light units</label><input id="a_mpl" type="number" min="0" step="1" value="4"></div>
-        <div class="actual-field"><label>Tiki Torch units</label><input id="a_tiki" type="number" min="0" step="1" value="0"></div>
-      </div>
-
-      <div class="card-title">Standalone module mix (aggregated across all fixture types)</div>
-      <div class="actual-grid">
-        <div class="actual-field"><label>Ketra 10W Flood</label><input id="a_k10f" type="number" min="0" step="1" value="93"></div>
-        <div class="actual-field"><label>Ketra 10W Spot</label><input id="a_k10s" type="number" min="0" step="1" value="3"></div>
-        <div class="actual-field"><label>Ketra 5W Flood</label><input id="a_k5f" type="number" min="0" step="1" value="11"></div>
-        <div class="actual-field"><label>Ketra 5W Spot</label><input id="a_k5s" type="number" min="0" step="1" value="8"></div>
-        <div class="actual-field"><label>Rania 10W</label><input id="a_r10" type="number" min="0" step="1" value="0"></div>
-        <div class="actual-field"><label>Rania 5W</label><input id="a_r5" type="number" min="0" step="1" value="0"></div>
-      </div>
-
-      <div class="card-title">Standalone optics mix (aggregated across all fixture types)</div>
-      <div class="assumption-note" style="margin-top:-4px">From SAP production-order components: every 15° optic pairs with a Spot module (3× Ketra 10W Spot + 8× Ketra 5W Spot = 11), and all 25/40/60° optics pair with Flood modules.</div>
-      <div class="actual-grid">
-        <div class="actual-field"><label>15°</label><input id="a_o15" type="number" min="0" step="1" value="11"></div>
-        <div class="actual-field"><label>25°</label><input id="a_o25" type="number" min="0" step="1" value="13"></div>
-        <div class="actual-field"><label>40°</label><input id="a_o40" type="number" min="0" step="1" value="81"></div>
-        <div class="actual-field"><label>60°</label><input id="a_o60" type="number" min="0" step="1" value="10"></div>
-      </div>
-      <div class="assumption-note" style="margin-bottom:16px">Run-rate is extrapolated from actuals ÷ days elapsed to project the full Aug 18–Oct 15 window (59 days), then split pro-rata across Sep (44 days, incl. the 14 Aug days) and Oct (15 days). Nov–Aug are rescaled proportionally to their original shape so the annual module total holds at 2,000.</div>
-      <div id="reforecastStats" class="stat-grid"></div>
-      <div class="callout" id="kitCallout"></div>
-      <div class="card-title">Demo kit trajectory vs. rep survey target</div>
-      <div class="legend"><span><span class="swatch" style="background:#185FA5"></span>Reforecasted kit sales</span><span><span class="swatch" style="background:#BA7517"></span>90-unit rep survey "month one" reference</span></div>
-      <div class="chart-wrap" style="height:220px;margin-bottom:8px"><canvas id="kitTrajChart"></canvas></div>
-      <p style="font-size:11px;color:var(--text3)">Source: VIA Field Intelligence rep firm survey (13 firms, Jul 15–Aug 12, 2026) &mdash; 90 dealers expected to order a Demo Kit in month one, range 2–25 per firm. Actual pace is shown as a projection, not forced to this target &mdash; per your team, hitting 90 is "still possible" but not the current run-rate.</p>
-    </div>
-  </div>
-
   <!-- TAB 1: Module ordering plan -->
-  <div id="sec-modules" class="section">
+  <div id="sec-modules" class="section visible">
     <div class="card">
       <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:16px">
         <div style="font-size:18px;font-weight:600">Module Ordering Plan</div>
         <div style="font-size:12px;color:var(--text2)">12-unit MOQ per variant &middot; 15-day lead time</div>
       </div>
-      <div class="qty-row">
-        <label for="modQty">Target opening order:</label>
-        <input id="modQty" class="qty-input" type="number" min="1" step="1" value="756">
-        <span style="font-size:12px;color:var(--text3)">units &mdash; actual rounded up per variant to 12-unit MOQ</span>
-      </div>
-      <div id="modActualQty" class="moq-note"></div>
+      <div id="modActualQty" class="moq-note" style="margin:0 0 16px"></div>
       <div class="stat-grid" id="modStats"></div>
       <div class="card-title">Order cadence &amp; inventory</div>
       <div class="legend">
@@ -189,12 +138,7 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
       <div style="font-size:18px;font-weight:600;margin-bottom:16px">Accessory Ordering Plan</div>
       <div style="font-size:15px;font-weight:600;margin-bottom:4px">Optics</div>
       <p style="font-size:12px;color:var(--text2);margin-bottom:12px">100-unit MOQ per angle. 15° restored at 10% of mix. Sep/Oct reflect reforecasted preorder actuals.</p>
-      <div class="qty-row">
-        <label for="optQty">Target opening order:</label>
-        <input id="optQty" class="qty-input" type="number" min="1" step="1" value="600">
-        <span style="font-size:12px;color:var(--text3)">units &mdash; rounded up per angle to 100-unit MOQ</span>
-      </div>
-      <div id="optActualQty" class="moq-note"></div>
+      <div id="optActualQty" class="moq-note" style="margin:0 0 16px"></div>
       <div class="stat-grid" id="opticsStats"></div>
       <div class="card-title">Optics ordering schedule</div>
       <div style="overflow-x:auto;margin-bottom:12px"><table id="opticsScheduleTable"></table></div>
@@ -312,7 +256,7 @@ var L_SAFETY = 24;
 var N_SAFETY = 12;
 var V_MOQ = 12; var L_MOQ = 100; var N_MOQ = 48;
 var H_MOQ = 200; var H_LEAD_MONTHS = 4;
-var LAUNCH = {totalWindowDays:59, sepDaysInWindow:44, octDaysInWindow:15}; // Aug 18–Oct 15; Aug 18–31 folded into Sep
+var LAUNCH = {totalWindowDays:59, sepDaysInWindow:44, octDaysInWindow:15, windowStart:'2026-08-18'}; // Aug 18–Oct 15; Aug 18–31 folded into Sep
 
 var vPcts = variants.map(function(v){return v.pct;});
 var lPcts = lenses.map(function(l){return l.pct;});
@@ -337,105 +281,16 @@ function distribute(total, pcts) {
 }
 function cmoq(val,moq){return Math.ceil(Math.max(val,0)/moq)*moq;}
 
-// ============ SKU parser (dealer configurator strings) ============
-// Fixture code -> {type key (matches FIXTURES array), field positions after split('-')}
-var SKU_TEMPLATES = {
-  'VIADL':  {type:'DUL',  moduleIdx:3, powerIdx:4, opticsIdx:5},
-  'VIAFL':  {type:'FUL',  moduleIdx:3, powerIdx:4, opticsIdx:5},
-  'VIAMPL': {type:'MPL',  moduleIdx:3, powerIdx:4, opticsIdx:5},
-  'VIAPL':  {type:'PL',   moduleIdx:3, powerIdx:4, opticsIdx:5},
-  'VIATK':  {type:'TIKI', moduleIdx:2, powerIdx:3, opticsIdx:4}
-};
-// Ketra Flood/Spot is determined by optics angle: 15° requires Spot, 25/40/60° use Flood.
-function variantFromModulePowerOptics(moduleLetter, power, optics){
-  if(moduleLetter==='K'){
-    var isSpot = (optics==='15');
-    if(power==='10') return isSpot?1:0; // index into variants[]: 0=K10Flood,1=K10Spot
-    if(power==='5')  return isSpot?3:2; // 2=K5Flood,3=K5Spot
-  }
-  if(moduleLetter==='R'){
-    return power==='10'?4:5; // 4=R10W,5=R5W
-  }
-  return null;
-}
-function parseSkuLine(line){
-  line = line.trim();
-  if(!line) return null;
-  var m = line.match(/^(.*?)(?:\s+x\s*(\d+)|\s*[x*]\s*(\d+))?$/i);
-  var body = (m?m[1]:line).trim();
-  var qty = m && (m[2]||m[3]) ? parseInt(m[2]||m[3],10) : 1;
-  if(!body) return null;
-  if(/^VIANODE$/i.test(body)) return {kind:'node', qty:qty};
-  var parts = body.toUpperCase().split('-');
-  var fixCode = parts[0];
-  var tmpl = SKU_TEMPLATES[fixCode];
-  if(!tmpl) return {kind:'unrecognized', raw:line};
-  var moduleLetter = parts[tmpl.moduleIdx];
-  var power = parts[tmpl.powerIdx];
-  var optics = parts[tmpl.opticsIdx];
-  var variantIdx = variantFromModulePowerOptics(moduleLetter, power, optics);
-  if(variantIdx===null || !optics) return {kind:'unrecognized', raw:line};
-  return {kind:'fixture', qty:qty, fixtureType:tmpl.type, variantIdx:variantIdx, optics:optics};
-}
-function importSkuOrders(){
-  var box = document.getElementById('skuImportBox');
-  var lines = box.value.split('\n');
-  var added = {DUL:0,FUL:0,MPL:0,PL:0,TIKI:0};
-  var addedVariant = [0,0,0,0,0,0];
-  var addedOptics = {15:0,25:0,40:0,60:0};
-  var addedNodes = 0, unrecognized = [];
-  lines.forEach(function(line){
-    var r = parseSkuLine(line);
-    if(!r) return;
-    if(r.kind==='node') addedNodes += r.qty;
-    else if(r.kind==='fixture'){
-      added[r.fixtureType] += r.qty;
-      addedVariant[r.variantIdx] += r.qty;
-      addedOptics[r.optics] += r.qty;
-    } else if(r.kind==='unrecognized') unrecognized.push(r.raw);
-  });
-  function bump(id, delta){ var el=document.getElementById(id); el.value = (parseInt(el.value,10)||0) + delta; }
-  bump('a_dul', added.DUL); bump('a_ful', added.FUL); bump('a_mpl', added.MPL); bump('a_pl', added.PL); bump('a_tiki', added.TIKI);
-  bump('a_k10f', addedVariant[0]); bump('a_k10s', addedVariant[1]); bump('a_k5f', addedVariant[2]); bump('a_k5s', addedVariant[3]); bump('a_r10', addedVariant[4]); bump('a_r5', addedVariant[5]);
-  bump('a_o15', addedOptics[15]); bump('a_o25', addedOptics[25]); bump('a_o40', addedOptics[40]); bump('a_o60', addedOptics[60]);
-  bump('a_nodes', addedNodes);
-  var totalParsed = added.DUL+added.FUL+added.MPL+added.PL+added.TIKI+addedNodes;
-  var msg = 'Added '+totalParsed+' unit'+(totalParsed===1?'':'s') + (addedNodes?' (incl. '+addedNodes+' standalone VIANODE)':'') + '.';
-  if(unrecognized.length) msg += ' '+unrecognized.length+' line(s) not recognized: '+unrecognized.slice(0,3).join(' | ');
-  document.getElementById('skuImportResult').textContent = msg;
-  box.value = '';
-  recomputeAll();
-}
-
 // ============ REFORECAST ENGINE ============
-function readActuals(){
-  return {
-    demoKits: parseInt(document.getElementById('a_demoKits').value,10)||0,
-    nodesTotal: parseInt(document.getElementById('a_nodes').value,10)||0,
-    daysElapsed: Math.max(1, parseInt(document.getElementById('a_days').value,10)||1),
-    fixtureUnits: {
-      DUL: parseInt(document.getElementById('a_dul').value,10)||0,
-      FUL: parseInt(document.getElementById('a_ful').value,10)||0,
-      PL:  parseInt(document.getElementById('a_pl').value,10)||0,
-      MPL: parseInt(document.getElementById('a_mpl').value,10)||0,
-      TIKI:parseInt(document.getElementById('a_tiki').value,10)||0
-    },
-    variantCounts: [
-      parseInt(document.getElementById('a_k10f').value,10)||0,
-      parseInt(document.getElementById('a_k10s').value,10)||0,
-      parseInt(document.getElementById('a_k5f').value,10)||0,
-      parseInt(document.getElementById('a_k5s').value,10)||0,
-      parseInt(document.getElementById('a_r10').value,10)||0,
-      parseInt(document.getElementById('a_r5').value,10)||0
-    ],
-    opticsCounts: {
-      15: parseInt(document.getElementById('a_o15').value,10)||0,
-      25: parseInt(document.getElementById('a_o25').value,10)||0,
-      40: parseInt(document.getElementById('a_o40').value,10)||0,
-      60: parseInt(document.getElementById('a_o60').value,10)||0
-    }
-  };
-}
+// Actuals now live in the VIA Forecast Tracker (Kye's artifact). This page keeps the last
+// pulled snapshot in memory; "Get latest actuals" replaces it from via/actuals.json.
+var ACTUALS = {
+  asOf:'2026-10-06T13:47:35.286Z', demoKits:11, nodesTotal:22, daysElapsed:49,
+  fixtureUnits:{DUL:95, FUL:16, PL:0, MPL:4, TIKI:0},
+  variantCounts:[93,3,11,8,0,0],          // K10 Flood, K10 Spot, K5 Flood, K5 Spot, R10, R5
+  opticsCounts:{15:11, 25:13, 40:81, 60:10}
+};
+function readActuals(){ return JSON.parse(JSON.stringify(ACTUALS)); }
 
 function computeReforecast(act){
   var standaloneActualUnits = act.fixtureUnits.DUL+act.fixtureUnits.FUL+act.fixtureUnits.PL+act.fixtureUnits.MPL+act.fixtureUnits.TIKI;
@@ -631,11 +486,10 @@ function sum2(arr){return arr.reduce(function(a,b){return a+b;},0);}
 
 var FIXED_OPENING = [276, 36, 204, 24, 132, 84];
 var FIXED_OPENING_TOTAL = sum(FIXED_OPENING);
-function moduleOpening(t){
-  if(t === FIXED_OPENING_TOTAL) return FIXED_OPENING.slice();
-  return vPcts.map(function(p){return cmoq(t*p,V_MOQ);});
-}
-function lensOpening(t){return lPcts.map(function(p){return cmoq(t*p,L_MOQ);});}
+// Opening orders were placed in Aug 2026 and are fixed.
+var FIXED_LENS_OPENING = [100, 200, 300, 200]; // 15, 25, 40, 60 deg
+function moduleOpening(){ return FIXED_OPENING.slice(); }
+function lensOpening(){ return FIXED_LENS_OPENING.slice(); }
 
 // ============ GLOBAL STATE (recomputed on every actuals change) ============
 var STATE = {};
@@ -659,46 +513,19 @@ function recomputeAll(){
     STATE.housingUsage.VIANH.push(R.totalNodesByMonth[i]);
   });
 
-  renderActualsTab();
-  renderModules(parseInt(document.getElementById('modQty').value,10)||FIXED_OPENING_TOTAL);
-  renderAccessories(parseInt(document.getElementById('optQty').value,10)||600);
+  renderModules();
+  renderAccessories();
   renderFixtures();
   renderHousings();
   renderForecastTab();
 }
 
-// ============ TAB 0: Actuals & Reforecast ============
-var kitTrajChartInst=null;
-function renderActualsTab(){
-  var R=STATE.R, act=STATE.act;
-  buildStats(document.getElementById('reforecastStats'),[
-    {label:'Modules preordered to date', value:R.actualModulesToDate.toLocaleString(), sub:act.demoKits+' kits + '+(R.actualModulesToDate-act.demoKits*4)+' standalone'},
-    {label:'Projected full-window kits', value:R.projKits.toLocaleString(), sub:'of '+LAUNCH.totalWindowDays+'-day preorder window'},
-    {label:'Projected full-window standalone', value:R.projStandalone.toLocaleString(), sub:'Directional Uplights, etc.'},
-    {label:'Reforecasted Sep', value:R.newSales[0].toLocaleString(), sub:'modules (was '+ORIGINAL_SALES[0]+')'},
-    {label:'Reforecasted Oct', value:R.newSales[1].toLocaleString(), sub:'modules (was '+ORIGINAL_SALES[1]+')'},
-    {label:'Annual total (held)', value:sum(R.newSales).toLocaleString(), sub:'modules, Sep\u201926\u2013Aug\u201927'},
-  ]);
-  var pctOfTarget = ((R.projKits/90)*100).toFixed(0);
-  document.getElementById('kitCallout').innerHTML =
-    '<strong>Demo kit pace:</strong> '+act.demoKits+' sold in the first '+act.daysElapsed+' days of the preorder window projects to <strong>'+R.projKits+' kits</strong> by Oct 15 &mdash; '+pctOfTarget+'% of the rep survey\'s 90-kit "month one" expectation (range reported was 2\u201325 per firm, so wide variance was anticipated). VIANODE reconciliation: '+R.actualKitNodes+' of the '+act.nodesTotal+' nodes preordered are kit-bundled, leaving '+R.actualStandaloneNodes+' as standalone accessory sales.';
-
-  var chartLabels=['Day '+act.daysElapsed+' (actual)','Full window (projected)','Rep target'];
-  if(kitTrajChartInst){kitTrajChartInst.destroy();kitTrajChartInst=null;}
-  kitTrajChartInst=new Chart(document.getElementById('kitTrajChart'),{
-    type:'bar',
-    data:{labels:chartLabels,datasets:[{label:'Kits',data:[act.demoKits,R.projKits,90],backgroundColor:[blueC,blueC,amberC],borderRadius:3,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return ' '+c.parsed.y+' kits';}}}},
-      scales:{x:{grid:{display:false},ticks:{color:tickC}},y:{grid:{color:gridC},ticks:{color:tickC},title:{display:true,text:'demo kits',color:tickC,font:{size:11}}}}}
-  });
-}
-
 // ============ TAB 1: Modules ============
 var modChartInst=null, modOrderStackInst=null, modForecastInst=null;
-function renderModules(target){
-  var ooV=moduleOpening(target);
+function renderModules(){
+  var ooV=moduleOpening();
   var oa=ooV.reduce(function(a,b){return a+b;},0);
-  document.getElementById('modActualQty').textContent='Actual opening order: '+oa+' units — '
+  document.getElementById('modActualQty').textContent='Opening order placed Aug 2026: '+oa+' units. '
     +ooV.map(function(v,i){return variants[i].short+': '+v;}).join('  ·  ');
 
   var plan=calcModulePlan(ooV, STATE.R);
@@ -802,10 +629,10 @@ function renderModules(target){
 }
 
 // ============ TAB 2: Accessories ============
-function renderAccessories(target){
-  var ooL=lensOpening(target);
+function renderAccessories(){
+  var ooL=lensOpening();
   var optActual=ooL.reduce(function(a,b){return a+b;},0);
-  document.getElementById('optActualQty').textContent='Actual opening order: '+optActual+' units — '
+  document.getElementById('optActualQty').textContent='Opening order placed Aug 2026: '+optActual+' units. '
     +ooL.map(function(v,i){return lenses[i].label+' ('+lenses[i].sku+'): '+v;}).join('  ·  ');
 
   var op=calcAccPlan(ooL, STATE.R);
@@ -1007,9 +834,78 @@ function downloadWorkbook(){
     ['40° optics',STATE.act.opticsCounts[40]],['60° optics',STATE.act.opticsCounts[60]],
     ['VIANODEs preordered',STATE.act.nodesTotal],
     ['Days elapsed in window',STATE.act.daysElapsed],['Generated',new Date().toISOString()]];
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(actRows), 'Actuals');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(actRows), 'Actuals used');
 
   XLSX.writeFile(wb, 'CS_LED_Launch_Plan.xlsx');
+}
+
+
+// ============ LATEST ACTUALS SYNC ============
+// actuals.json sits next to this page in csgitfiles/csfi (via/actuals.json). It holds aggregate
+// counts only (no dealer/contact data) built from the VIA Forecast Tracker's SAP export by
+// via/sync_actuals.py. The GitHub contents API is tried first because it serves the newest
+// commit immediately; the Pages copy (cached up to ~10 min) is the fallback.
+var ACTUALS_SOURCES = [
+  {url:'https://api.github.com/repos/csgitfiles/csfi/contents/via/actuals.json?ref=main', headers:{'Accept':'application/vnd.github.raw+json'}},
+  {url:'actuals.json', headers:{}}
+];
+function fetchActualsJson(){
+  var i = 0;
+  function next(lastErr){
+    if(i >= ACTUALS_SOURCES.length) return Promise.reject(lastErr || new Error('No source reachable'));
+    var src = ACTUALS_SOURCES[i++];
+    var url = src.url + (src.url.indexOf('?')>=0 ? '&' : '?') + 't=' + Date.now();
+    return fetch(url, {headers:src.headers, cache:'no-store'})
+      .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status+' from '+src.url); return r.json(); })
+      .catch(next);
+  }
+  return next();
+}
+function validateActuals(d){
+  var need = ['demoKits','nodesTotal','fixtures','modules','optics','asOf'];
+  need.forEach(function(k){ if(d[k]===undefined) throw new Error('actuals.json is missing "'+k+'"'); });
+}
+function daysElapsedAt(asOf){
+  var start = new Date(LAUNCH.windowStart+'T00:00:00');
+  var d = new Date(asOf); var day = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  var n = Math.round((day - start)/86400000);
+  return Math.min(LAUNCH.totalWindowDays, Math.max(1, n));
+}
+function applyActuals(d){
+  validateActuals(d);
+  var n=function(v){ return Math.max(0, Math.round(Number(v)||0)); };
+  var f=d.fixtures, m=d.modules, o=d.optics;
+  ACTUALS = {
+    asOf:d.asOf, demoKits:n(d.demoKits), nodesTotal:n(d.nodesTotal), daysElapsed:daysElapsedAt(d.asOf),
+    fixtureUnits:{DUL:n(f.DUL), FUL:n(f.FUL), PL:n(f.PL), MPL:n(f.MPL), TIKI:n(f.TIKI)},
+    variantCounts:[n(m.k10f), n(m.k10s), n(m.k5f), n(m.k5s), n(m.r10), n(m.r5)],
+    opticsCounts:{15:n(o['15']), 25:n(o['25']), 40:n(o['40']), 60:n(o['60'])}
+  };
+  recomputeAll();
+}
+function fmtDate(iso){
+  var d = new Date(iso.length===10 ? iso+'T12:00:00' : iso);
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+function syncLatestActuals(){
+  var btn = document.getElementById('syncBtn'), st = document.getElementById('syncStatus');
+  var before = sum(STATE.R ? STATE.R.newSales.slice(0,2) : [0,0]);
+  btn.disabled = true; st.className = ''; st.textContent = 'Retrieving latest VIA actuals…';
+  fetchActualsJson().then(function(d){
+    applyActuals(d);
+    var after = sum(STATE.R.newSales.slice(0,2));
+    var pr = d.postingRange ? fmtDate(d.postingRange[0])+' – '+fmtDate(d.postingRange[1]) : 'n/a';
+    var delta = after-before;
+    var msg = 'Updated with actuals as of '+fmtDate(d.asOf)+': '+d.demoKits+' kits, '+
+      (f2(d.fixtures))+' standalone fixtures, '+d.nodesTotal+' nodes (postings '+pr+'). Sep+Oct reforecast '+
+      (delta===0 ? 'unchanged' : (delta>0?'+':'')+delta+' modules')+'; all ordering plans recalculated.';
+    if(d.unmapped && d.unmapped.length) msg += ' Not counted (unknown SKUs): '+d.unmapped.join(', ')+'.';
+    st.className = (d.unmapped && d.unmapped.length) ? 'err' : 'ok'; st.textContent = msg;
+  }).catch(function(e){
+    st.className = 'err';
+    st.textContent = 'Could not retrieve actuals ('+e.message+'). Values on the page were not changed.';
+  }).then(function(){ btn.disabled = false; });
+  function f2(fx){ return (fx.DUL||0)+(fx.FUL||0)+(fx.PL||0)+(fx.MPL||0)+(fx.TIKI||0); }
 }
 
 // ============ Tab switching & bootstrapping ============
@@ -1022,22 +918,8 @@ function switchTab(name,btn){
 
 recomputeAll();
 
-var debM,debA,debAct;
-document.getElementById('modQty').addEventListener('input',function(){
-  clearTimeout(debM); var val=parseInt(this.value,10);
-  debM=setTimeout(function(){if(val&&val>0) renderModules(val);},350);
-});
-document.getElementById('optQty').addEventListener('input',function(){
-  clearTimeout(debA); var val=parseInt(this.value,10);
-  debA=setTimeout(function(){if(val&&val>0) renderAccessories(val);},350);
-});
-['a_demoKits','a_nodes','a_days','a_dul','a_ful','a_pl','a_mpl','a_tiki',
- 'a_k10f','a_k10s','a_k5f','a_k5s','a_r10','a_r5','a_o15','a_o25','a_o40','a_o60'].forEach(function(id){
-  document.getElementById(id).addEventListener('input',function(){
-    clearTimeout(debAct);
-    debAct=setTimeout(recomputeAll,350);
-  });
-});
+
+
 </script>
 </body>
 </html>
