@@ -99,7 +99,7 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
     </div>
     <div class="header-actions">
       <div class="btn-row">
-        <button class="dl-btn" onclick="downloadWorkbook()">Download .xlsx</button>
+        <button class="dl-btn" onclick="downloadWorkbook()">Download Order Plan .xlsx</button>
       </div>
       <div id="syncStatus">Loading latest actuals…</div>
     </div>
@@ -109,7 +109,6 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
     <button class="tab-btn active" onclick="switchTab('modules',this)">Module ordering plan</button>
     <button class="tab-btn" onclick="switchTab('accessories',this)">Accessory ordering plan</button>
     <button class="tab-btn" onclick="switchTab('fixtures',this)">Fixture forecast</button>
-    <button class="tab-btn" onclick="switchTab('housings',this)">Housing ordering plan</button>
     <button class="tab-btn" onclick="switchTab('forecast',this)">Sales forecast</button>
   </div>
 
@@ -157,7 +156,7 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
       <div style="overflow-x:auto"><table id="opticsVarTable"></table></div>
       <hr class="section-divider">
       <div class="sub-title" style="margin-bottom:4px">Nodes (electronics) <span class="sku-chip">HW-WN-RF-CSL</span></div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:8px">VIAAN electronics module, ordered from Lutron in small monthly batches. Pairs 1:1 with a VIANH brass housing (see Housing tab) to form a complete VIANODE. Opening order 144 units (3 MOQ). 48-unit MOQ reorders. Safety stock: 12 units.</p>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:8px">VIAAN electronics module, ordered from Lutron in small monthly batches. Pairs 1:1 with a VIANH brass housing to form a complete VIANODE. Opening order 144 units (3 MOQ). 48-unit MOQ reorders. Safety stock: 12 units.</p>
       <div class="assumption-note" id="nodeReconcile" style="margin-bottom:16px"></div>
       <div class="stat-grid" id="nodesStats"></div>
       <div class="card-title">Nodes ordering schedule</div>
@@ -169,7 +168,7 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
   <div id="sec-fixtures" class="section">
     <div class="card">
       <div class="sec-title" style="margin-bottom:4px">Fixture Forecast</div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:16px">Fixtures are assembled to order at the NJ warehouse from modules, optics, housings, and nodes already tracked elsewhere in this tool, so there's no separate fixture-level procurement or MOQ. This tab exists to forecast demand by finished-product type, which drives housing consumption on the next tab. Any module type fits any fixture, so fixture mix is independent of the module mix.</p>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:16px">Fixtures are assembled to order at the NJ warehouse, so there's no separate fixture-level procurement or MOQ. This tab forecasts demand by finished-product type. Any module type fits any fixture, so fixture mix is independent of the module mix.</p>
       <div class="card-title">VIA Demo Kit <span class="sku-chip">bundle</span></div>
       <p style="font-size:12px;color:var(--text2);margin-bottom:8px">Fixed bill of materials per kit: 1× Directional Uplight (Ketra 10W, 40°) &middot; 1× Fixed Uplight (Ketra 5W, 25°) &middot; 1× Modern Path Light (Ketra 5W, 60°) &middot; 1× Path Light (Ketra 5W, 60°) &middot; 1× VIANode.</p>
       <div class="stat-grid" id="kitStats"></div>
@@ -179,33 +178,6 @@ tr.total-row td{background:var(--total-bg);font-weight:500;color:var(--text)}
       <div class="chart-wrap" style="height:260px;margin-bottom:24px"><canvas id="fixtureStackChart"></canvas></div>
       <div class="card-title">Monthly fixture forecast by type</div>
       <div style="overflow-x:auto"><table id="fixtureTable"></table></div>
-    </div>
-  </div>
-
-  <!-- TAB 4: Housings (NEW) -->
-  <div id="sec-housings" class="section">
-    <div class="card">
-      <div class="sec-title" style="margin-bottom:4px">Housing Ordering Plan</div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:16px">Brass housings, ordered from the China factory in large infrequent batches (1–4×/year), not the Lutron monthly cadence used for modules/optics/nodes. <strong>120-day lead time</strong> &middot; safety stock set at a 30-day supply &middot; 200-unit MOQ. Reorder triggers when projected inventory minus the next 4 months of consumption would fall below the safety floor.</p>
-      <div class="callout"><strong>Opening orders already placed with the brass factory:</strong> 600× VIADLH &middot; 200× VIAFLH &middot; 400× VIAPLH &middot; 250× VIANH (1,200 fixture housings + 250 node housings, per your original PO).</div>
-      <div class="legend">
-        <span><span class="sku-chip">VIADLH</span>Directional Light Housing: Directional Uplight + Modern Path Light</span>
-        <span><span class="sku-chip">VIAFLH</span>Fixed Light Housing: Fixed Uplight</span>
-        <span><span class="sku-chip">VIAPLH</span>Path Light Housing: Path Light + VIA Tiki Torch <span class="sku-tbd sku-chip">Tiki tracked, ~0 volume</span></span>
-        <span><span class="sku-chip">VIANH</span>Node Housing: pairs with VIAAN for every VIANODE</span>
-      </div>
-      <div class="stat-grid" id="housingSummaryStats"></div>
-      <div class="card-title">Annual consumption vs. what's on order</div>
-      <div class="chart-wrap" style="height:220px;margin-bottom:24px"><canvas id="housingCoverageChart"></canvas></div>
-
-      <div class="card-title">VIADLH schedule</div>
-      <div style="overflow-x:auto;margin-bottom:20px"><table id="housingTable_VIADLH"></table></div>
-      <div class="card-title">VIAFLH schedule</div>
-      <div style="overflow-x:auto;margin-bottom:20px"><table id="housingTable_VIAFLH"></table></div>
-      <div class="card-title">VIAPLH schedule</div>
-      <div style="overflow-x:auto;margin-bottom:20px"><table id="housingTable_VIAPLH"></table></div>
-      <div class="card-title">VIANH schedule</div>
-      <div style="overflow-x:auto"><table id="housingTable_VIANH"></table></div>
     </div>
   </div>
 
@@ -236,7 +208,7 @@ var variants = [
   {sku:'HW-CSL-FSSP09', label:'Ketra 10W Spot',  short:'K·10W·Spot',  color:'#9198A8', pct:0.042, tbd:false},
   {sku:'HW-CSL-FSDM04', label:'Ketra 5W Flood',  short:'K·5W·Flood',  color:'#F68D2E', pct:0.252, tbd:false},
   {sku:'HW-CSL-FSSP04', label:'Ketra 5W Spot',   short:'K·5W·Spot',   color:'#FBC08C', pct:0.028, tbd:false},
-  {sku:'HW-CSL-TWXX09', label:'Rania 10W',        short:'R·10W',       color:'#2B3240', pct:0.180, tbd:false},
+  {sku:'HW-CSL-TWXX09', label:'Rania 10W',        short:'R·10W',       color:'#3B82C4', pct:0.180, tbd:false},
   {sku:'HW-CSL-TWXX04', label:'Rania 5W',         short:'R·5W',        color:'#A85A16', pct:0.120, tbd:false},
 ];
 var lenses = [
@@ -255,12 +227,7 @@ var FIXTURES = [
   {key:'MPL',  name:'Modern Path Light',   sku:'VIAMPL', housing:'VIADLH', color:'#2B3240', pct:0.1783, tbd:false},
   {key:'TIKI', name:'VIA Tiki Torch',      sku:'VIATK',  housing:'VIAPLH', color:'#FBC08C', pct:0.0240, tbd:true},
 ];
-var HOUSINGS = [
-  {sku:'VIADLH', name:'Directional Light Housing', opening:600},
-  {sku:'VIAFLH', name:'Fixed Light Housing',        opening:200},
-  {sku:'VIAPLH', name:'Path Light Housing',         opening:400},
-  {sku:'VIANH',  name:'Node Housing',               opening:250},
-];
+
 
 var V_SAFETY = [84, 12, 56, 12, 36, 24];
 var L_SAFETY = 24;
@@ -273,6 +240,8 @@ var vPcts = variants.map(function(v){return v.pct;});
 var lPcts = lenses.map(function(l){return l.pct;});
 
 var isDark = matchMedia('(prefers-color-scheme:dark)').matches;
+// Dark slate series (15° optics, Modern Path Light) would vanish on the dark-mode background: swap to light slate
+if(isDark){ [variants, lenses, FIXTURES].forEach(function(list){ list.forEach(function(x){ if(x.color==='#2B3240') x.color='#D3D7E0'; }); }); }
 var gridC  = isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.07)';
 var tickC  = isDark?'#aaa':'#555';
 var blueC  = isDark?'rgba(145,152,168,0.9)':'rgba(78,91,115,0.88)';   // primary
@@ -449,24 +418,6 @@ function calcNodesPlan(nodeSales){
   }
   return {orders:orders,startInv:startInv,endInv:endInv};
 }
-function calcHousingPlan(usage, opening){
-  var annualTotal=sum(usage), avgMonthly=annualTotal/12, safetyStock=Math.round(avgMonthly);
-  var inv=opening, orders=new Array(12).fill(0), startInv=[], endInv=[];
-  for(var i=0;i<12;i++){
-    startInv.push(inv);
-    var lookahead=0;
-    for(var j=i;j<Math.min(12,i+H_LEAD_MONTHS);j++) lookahead+=usage[j];
-    var projected = inv-lookahead;
-    if(projected<safetyStock){
-      var shortfall=safetyStock-projected;
-      orders[i]=Math.ceil(shortfall/H_MOQ)*H_MOQ;
-      inv+=orders[i];
-    }
-    inv-=usage[i]; endInv.push(inv);
-  }
-  return {orders:orders,startInv:startInv,endInv:endInv,safetyStock:safetyStock,annualTotal:annualTotal};
-}
-
 function buildStats(el,items){
   el.innerHTML=items.map(function(s){
     return '<div class="stat"><div class="stat-label">'+s.label+'</div><div class="stat-value">'+s.value+'</div><div class="stat-sub">'+s.sub+'</div></div>';
@@ -515,20 +466,10 @@ function recomputeAll(){
   STATE.annualV = variants.map(function(_,vi){return STATE.monthly.reduce(function(s,m){return s+m[vi];},0);});
   STATE.annualL = lenses.map(function(_,li){return STATE.lMonthly.reduce(function(s,m){return s+m[li];},0);});
 
-  // housing usage by month
-  STATE.housingUsage = {VIADLH:[],VIAFLH:[],VIAPLH:[],VIANH:[]};
-  months.forEach(function(_,i){
-    var fx=R.fixtureUnitsByMonth[i], k=R.newKits[i];
-    STATE.housingUsage.VIADLH.push(k*2+fx[0]+fx[3]);
-    STATE.housingUsage.VIAFLH.push(k*1+fx[2]);
-    STATE.housingUsage.VIAPLH.push(k*1+fx[1]+fx[4]);
-    STATE.housingUsage.VIANH.push(R.totalNodesByMonth[i]);
-  });
 
   renderModules();
   renderAccessories();
   renderFixtures();
-  renderHousings();
   renderForecastTab();
 }
 
@@ -706,12 +647,12 @@ function renderFixtures(){
     {label:'Sep (reforecast)', value:R.kitSep.toString(), sub:'kits'},
     {label:'Oct (reforecast)', value:R.kitOct.toString(), sub:'kits'},
     {label:'Modules per kit', value:'4', sub:'1×10W Flood + 3×5W Flood'},
-    {label:'Housings per kit', value:'4', sub:'2×VIADLH + 1×VIAFLH + 1×VIAPLH'},
+    {label:'Nodes per kit', value:'1', sub:'VIANODE (VIAAN + VIANH)'},
   ]);
 
   var legEl=document.getElementById('fixtureLegend'); legEl.innerHTML='';
   FIXTURES.forEach(function(f){
-    legEl.innerHTML+='<span><span class="swatch" style="background:'+f.color+'"></span>'+f.name+' <span class="sku-chip'+(f.tbd?' sku-tbd':'')+'">'+f.housing+'</span></span>';
+    legEl.innerHTML+='<span><span class="swatch" style="background:'+f.color+'"></span>'+f.name+' <span class="sku-chip'+(f.tbd?' sku-tbd':'')+'">'+f.sku+'</span></span>';
   });
 
   if(fixtureStackInst){fixtureStackInst.destroy();fixtureStackInst=null;}
@@ -739,35 +680,6 @@ function renderFixtures(){
   annualFix.forEach(function(v){h+='<td>'+v+'</td>';});
   h+='<td>'+(annualKits+sum(annualFix))+'</td></tr></tbody>';
   t.innerHTML=h;
-}
-
-// ============ TAB 4: Housings ============
-var housingCovInst=null;
-function renderHousings(){
-  var plans={};
-  HOUSINGS.forEach(function(hs){plans[hs.sku]=calcHousingPlan(STATE.housingUsage[hs.sku], hs.opening);});
-
-  buildStats(document.getElementById('housingSummaryStats'), HOUSINGS.map(function(hs){
-    var p=plans[hs.sku];
-    return {label:hs.sku, value:p.annualTotal.toLocaleString(), sub:'annual demand vs. '+hs.opening+' on order'};
-  }));
-
-  if(housingCovInst){housingCovInst.destroy();housingCovInst=null;}
-  housingCovInst=new Chart(document.getElementById('housingCoverageChart'),{
-    type:'bar',
-    data:{labels:HOUSINGS.map(function(h){return h.sku;}),datasets:[
-      {label:'Ordered (opening)',data:HOUSINGS.map(function(h){return h.opening;}),backgroundColor:blueC,borderRadius:3},
-      {label:'Annual demand',data:HOUSINGS.map(function(h){return plans[h.sku].annualTotal;}),backgroundColor:amberC,borderRadius:3}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:true,position:'top',labels:{color:tickC,boxWidth:10,font:{size:11}}},tooltip:{callbacks:{label:function(c){return ' '+c.dataset.label+': '+c.parsed.y.toLocaleString();}}}},
-      scales:{x:{grid:{display:false},ticks:{color:tickC}},y:{grid:{color:gridC},ticks:{color:tickC},title:{display:true,text:'units',color:tickC,font:{size:11}}}}}
-  });
-
-  HOUSINGS.forEach(function(hs){
-    var p=plans[hs.sku];
-    buildScheduleTable('housingTable_'+hs.sku, hs.opening, p, STATE.housingUsage[hs.sku], p.safetyStock);
-  });
 }
 
 // ============ TAB 5: Sales forecast ============
@@ -858,11 +770,6 @@ function downloadWorkbook(){
   XLSX.utils.book_append_sheet(wb, singleSheet('VIAAN Node Electronics Ordering Plan (HW-WN-RF-CSL)','Lutron · MOQ 48 · 15-day lead time (same-month arrival)',
     144, calcNodesPlan(R.totalNodesByMonth), R.totalNodesByMonth, N_SAFETY, 'Forecast nodes'), 'Nodes (VIAAN)');
 
-  HOUSINGS.forEach(function(hs){
-    var use=STATE.housingUsage[hs.sku], p=calcHousingPlan(use, hs.opening);
-    XLSX.utils.book_append_sheet(wb, singleSheet(hs.sku+' '+hs.name+' Ordering Plan','Brass factory · MOQ 200 · 120-day lead time (orders placed 4 months ahead of need)',
-      hs.opening, p, use, p.safetyStock, 'Forecast usage'), hs.sku);
-  });
 
   XLSX.writeFile(wb, 'VIA_Forecasting.xlsx');
 }
