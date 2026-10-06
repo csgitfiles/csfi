@@ -1,0 +1,35 @@
+{
+  "source": "VIA Forecast Tracker (SAP sales/production orders)",
+  "asOf": "2026-10-06T13:47:35.286Z",
+  "generatedAt": "2026-10-06T20:32:29+00:00",
+  "postingRange": [
+    "2026-08-18",
+    "2026-10-01"
+  ],
+  "salesOrders": 22,
+  "demoKits": 11,
+  "standaloneNodes": 11,
+  "fixtures": {
+    "DUL": 95,
+    "FUL": 16,
+    "PL": 0,
+    "MPL": 4,
+    "TIKI": 0
+  },
+  "modules": {
+    "k10f": 93,
+    "k10s": 3,
+    "k5f": 11,
+    "k5s": 8,
+    "r10": 0,
+    "r5": 0
+  },
+  "optics": {
+    "15": 11,
+    "25": 13,
+    "40": 81,
+    "60": 10
+  },
+  "nodesTotal": 22,
+  "unmapped": []
+}
