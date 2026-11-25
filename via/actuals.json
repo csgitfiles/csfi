@@ -1,23 +1,23 @@
 {
   "source": "VIA Forecast Tracker (SAP sales/production orders)",
-  "asOf": "2026-11-13T18:10:33.553Z",
-  "generatedAt": "2026-11-13T18:14:54+00:00",
+  "asOf": "2026-11-25T15:35:39.619Z",
+  "generatedAt": "2026-11-25T15:40:11+00:00",
   "postingRange": [
     "2026-08-18",
-    "2026-11-10"
+    "2026-11-23"
   ],
-  "salesOrders": 53,
-  "demoKits": 25,
-  "standaloneNodes": 22,
+  "salesOrders": 62,
+  "demoKits": 30,
+  "standaloneNodes": 26,
   "fixtures": {
-    "DUL": 187,
-    "FUL": 31,
+    "DUL": 196,
+    "FUL": 33,
     "PL": 10,
     "MPL": 9,
     "TIKI": 2
   },
   "modules": {
-    "k10f": 222,
+    "k10f": 233,
     "k10s": 11,
     "k5f": 26,
     "k5s": 8,
@@ -26,10 +26,12 @@
   },
   "optics": {
     "15": 15,
-    "25": 70,
-    "40": 152,
-    "60": 30
+    "25": 72,
+    "40": 158,
+    "60": 33
   },
-  "nodesTotal": 47,
-  "unmapped": []
+  "nodesTotal": 56,
+  "unmapped": [
+    "VIADEMOKIT2"
+  ]
 }
